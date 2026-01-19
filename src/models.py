@@ -8,12 +8,22 @@ class Pedido(Base):
     num = Column(Integer, primary_key=True)
     valor = Column(DECIMAL, nullable=False)
     data = Column(TIMESTAMP, default=func.now())
-
-    produtos_nomes = Column(Text, ForeignKey("produtos.nome"))
-    produtos = relationship("Produto", back_populates="pedidos")
-
     cliente_nome = Column(Text, ForeignKey("clientes.nome"))
+
+    item_pedido = relationship("ItemPedido", back_populates="pedidos", cascade="all, delete")
     cliente = relationship("Cliente", back_populates="pedidos")
+
+class ItemPedido(Base):
+    __tablename__ = "itens_pedido"
+
+    num = Column(Integer, primary_key=True) 
+    num_pedido = Column(Integer, ForeignKey("pedidos.num"))
+    produto_nome = Column(Text, ForeignKey("produtos.nome"))
+    quantidade = Column(Integer, nullable=False)
+    valor_unitario = Column(DECIMAL, nullable=False)
+
+    produto = relationship("Produto", back_populates="pedidos")
+    pedidos = relationship("Pedido", back_populates="item_pedido")
 
 class Cliente(Base):
     __tablename__ = "clientes"
@@ -35,4 +45,4 @@ class Produto(Base):
     valor = Column(DECIMAL, nullable=False)
     categoria = Column(Text)
 
-    pedidos = relationship("Pedido", back_populates="produtos")
+    pedidos = relationship("ItemPedido", back_populates="produto")
