@@ -2,6 +2,17 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import List
 
+class UsuarioCreate(BaseModel):
+    email: str
+    senha: str
+
+class UsuarioResponse(BaseModel):
+    id: int
+    email: str
+
+    class ConfigDict:
+        from_attributes = True
+
 class ItemPedidoCreate(BaseModel):
     produto_nome: str
     quantidade: int

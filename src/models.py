@@ -1,6 +1,13 @@
-from sqlalchemy import Column, Integer, DECIMAL, Text, TIMESTAMP, func, ForeignKey, ARRAY
+from sqlalchemy import Column, Integer, DECIMAL, Text, TIMESTAMP, func, ForeignKey
 from sqlalchemy.orm import relationship
 from src.database import Base
+
+class Usuario(Base):
+    __tablename__ = "usuarios"
+
+    id = Column(Integer, primary_key=True)
+    email = Column(Text, nullable=False, unique=True)
+    senha_hash = Column(Text, nullable=False)
 
 class Pedido(Base):
     __tablename__ = "pedidos"
