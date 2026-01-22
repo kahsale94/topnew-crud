@@ -65,9 +65,9 @@ class ClienteUpdate(BaseModel):
 class ClienteResponse(BaseModel):
     num: int
     nome: str
-    idade: int
+    idade: int | None = None
     telefone: str
-    email: str
+    email: str | None = None
 
     class ConfigDict:
         from_attributes = True
@@ -87,9 +87,9 @@ class ProdutoUpdate(BaseModel):
 class ProdutoResponse(BaseModel):
     num: int
     nome: str
-    descricao: str
+    descricao: str | None = None
     valor: float
-    categoria: str
+    categoria: str | None = None
 
     class ConfigDict:
         from_attributes = True
