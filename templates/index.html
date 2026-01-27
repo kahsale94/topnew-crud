@@ -1,249 +1,277 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Pedidos</title>
+    <title>Sistema TopNew</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="../static/styles.css">
 </head>
+
 <body>
 
-<!-- ================= HEADER ================= -->
+    <!-- ================= HEADER ================= -->
 
-<header class="topbar">
-    <h1>Sistema de Pedidos</h1>
-    <div class="user-dropdown">Usuário ▾</div>
-</header>
+    <header class="topbar">
+        <h1>Sistema TopNew</h1>
 
-<!-- ================= TABS ================= -->
+        <div class="user-menu">
+            <button id="user-btn" class="user-btn">
+                Usuário ▾
+            </button>
 
-<nav class="tabs">
-    <button class="tab active" data-tab="pedidos">Pedidos</button>
-    <button class="tab" data-tab="clientes">Clientes</button>
-    <button class="tab" data-tab="produtos">Produtos</button>
-</nav>
-
-<!-- ================= CONTEÚDO ================= -->
-
-<main class="container">
-
-<!-- ================= PEDIDOS ================= -->
-
-    <section id="pedidos" class="page active">
-
-        <button class="btn primary" onclick="abrirFormulario('pedido')">+ Novo Pedido</button>
-
-        <!-- ================= NOVO PEDIDO ================= -->
-
-        <div id="form-pedido" class="form-container hidden" style="width: 80%">
-            <h2>Novo Pedido</h2>
-            
-            <div class="form-group">
-                <label>Cliente (nome)</label>
-                <input id="pedido-cliente-nome" type="text">
+            <div id="user-dropdown" class="user-dropdown hidden">
+                <div id="user-email" class="user-email"></div>
+                <hr>
+                <button id="logout-btn" class="logout-btn">Sair</button>
             </div>
-
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Produto</th>
-                        <th>Quantidade</th>
-                        <th>Valor Unitário</th>
-                        <th>Total</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="itens-pedido-tbody"></tbody>
-            </table>
-
-            <div class="pedido-total" style="margin: 1%; text-align: right; margin-right: 8%;">
-                Total do pedido:
-                <strong id="pedido-total">R$ 0,00</strong>
-            </div>
-
-            <button onclick="fecharFormulario('pedido')" type="button" class="btn cancel">
-                Cancelar Pedido
-            </button>
-
-            <button id="btn-add-item" type="button" class="btn secondary">
-                + Adicionar Produto
-            </button>
-
-            <button id="btn-salvar-pedido" type="button" class="btn primary">
-                Salvar Pedido
-            </button>
         </div>
+    </header>
 
-        <br></br>
+    <!-- ================= TABS ================= -->
 
-        <div class="page-header">
-            <H1>Pedidos</H1>
+    <nav class="tabs">
+        <button class="tab active" data-tab="pedidos">Pedidos</button>
+        <button class="tab" data-tab="clientes">Clientes</button>
+        <button class="tab" data-tab="produtos">Produtos</button>
+    </nav>
 
-            <button class="btn secondary icon-btn" onclick="carregarPedidos(true)" title="Recarregar Pedidos">
-                <img src="../static/icons/recarregar.png" alt="Recarregar">
-            </button>
-        </div>
+    <!-- ================= CONTEÚDO ================= -->
 
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Nº</th>
-                    <th>Cliente</th>
-                    <th>Data</th>
-                    <th>Valor Total</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="pedidos-tbody">
-                <!-- GET /pedidos -->
-            </tbody>
-        </table>
-        <br></br>
+    <main class="container">
 
-    </section>
+        <!-- ================= PEDIDOS ================= -->
 
-<!-- ================= CLIENTES ================= -->
+        <section id="pedidos" class="page active">
 
-    <section id="clientes" class="page">
-
-        <button class="btn primary" onclick="abrirFormulario('cliente')">+ Novo Cliente</button>
-
-        <!-- ================= NOVO CLIENTE ================= -->
-
-        <div id="form-cliente" class="form-container hidden">
-            <h2>Novo Cliente</h2>
-
-            <div class="form-group">
-                <label>Nome</label>
-                <input id="cliente-nome" type="text">
+            <div class="page-actions">
+                <button class="btn primary" onclick="abrirFormulario('pedido')">+ Novo Pedido</button>
             </div>
 
-            <div class="form-group">
-                <label>Idade</label>
-                <input id="cliente-idade" type="number">
+            <!-- ================= NOVO PEDIDO ================= -->
+
+            <div id="form-pedido" class="form-container hidden" style="width: 80%">
+                <h2>Novo Pedido</h2>
+
+                <div class="form-group">
+                    <label>Cliente (nome)</label>
+                    <input id="pedido-cliente-nome" type="text">
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="itens-pedido-tbody"></tbody>
+                </table>
+
+                <div class="pedido-total" style="margin: 1%; text-align: right; margin-right: 8%;">
+                    Total do pedido:
+                    <strong id="pedido-total">R$ 0,00</strong>
+                </div>
+
+                <button onclick="fecharFormulario('pedido')" type="button" class="btn cancel">
+                    Cancelar Pedido
+                </button>
+
+                <button id="btn-add-item" type="button" class="btn secondary">
+                    + Adicionar Produto
+                </button>
+
+                <button id="btn-salvar-pedido" type="button" class="btn primary">
+                    Salvar Pedido
+                </button>
             </div>
 
-            <div class="form-group">
-                <label>Telefone</label>
-                <input id="cliente-telefone" type="text">
+            <div class="page-header">
+                <H1>Pedidos</H1>
+
+                <button class="btn secondary icon-btn" onclick="carregarPedidos(true)" title="Recarregar Pedidos">
+                    <img src="../static/icons/recarregar.png" alt="Recarregar">
+                </button>
             </div>
 
-            <div class="form-group">
-                <label>Email</label>
-                <input id="cliente-email" type="email">
+            <!-- ================= TABELA ================= -->
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nº</th>
+                            <th>Cliente</th>
+                            <th>Data</th>
+                            <th>Valor Total</th>
+                            <th>Ações</th>
+                            <th>Itens</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="pedidos-tbody">
+                        <!-- GET /pedidos -->
+                    </tbody>
+                </table>
             </div>
 
-            <button onclick="fecharFormulario('cliente')" type="button" class="btn cancel">
-                Cancelar
-            </button>
+        </section>
 
-            <button id="btn-salvar-cliente" class="btn primary">
-                Salvar Cliente
-            </button>
-        </div>
+        <!-- ================= CLIENTES ================= -->
 
-        <br></br>
+        <section id="clientes" class="page">
 
-        <div class="page-header">
-            <H1>Clientes</H1>
-
-            <button class="btn secondary icon-btn" onclick="carregarClientes(true)" title="Recarregar Clientes">
-                <img src="../static/icons/recarregar.png" alt="Recarregar">
-            </button>
-        </div>
-
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Nº</th>
-                    <th>Nome</th>
-                    <th>Idade</th>
-                    <th>Telefone</th>
-                    <th>Email</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="clientes-tbody">
-                <!-- GET /clientes -->
-            </tbody>
-        </table>
-        <br></br>
-
-    </section>
-
-<!-- ================= PRODUTOS ================= -->
-
-    <section id="produtos" class="page">
-
-        <button class="btn primary" onclick="abrirFormulario('produto')">+ Novo Produto</button>
-
-        <!-- ================= NOVO PRODUTO ================= -->
-
-        <div id="form-produto" class="form-container hidden">
-            <h2>Novo Produto</h2>
-
-            <div class="form-group">
-                <label>Nome</label>
-                <input id="produto-nome" type="text">
+            <div class="page-actions">
+                <button class="btn primary" onclick="abrirFormulario('cliente')">+ Novo Cliente</button>
             </div>
 
-            <div class="form-group">
-                <label>Descrição</label>
-                <input id="produto-descricao" type="text">
+            <!-- ================= NOVO CLIENTE ================= -->
+
+            <div id="form-cliente" class="form-container hidden">
+                <h2>Novo Cliente</h2>
+
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input id="cliente-nome" type="text">
+                </div>
+
+                <div class="form-group">
+                    <label>Idade</label>
+                    <input id="cliente-idade" type="number">
+                </div>
+
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input id="cliente-telefone" type="text">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input id="cliente-email" type="email">
+                </div>
+
+                <button onclick="fecharFormulario('cliente')" type="button" class="btn cancel">
+                    Cancelar
+                </button>
+
+                <button id="btn-salvar-cliente" class="btn primary">
+                    Salvar Cliente
+                </button>
             </div>
 
-            <div class="form-group">
-                <label>Valor</label>
-                <input id="produto-valor" type="number" step="0.01">
+            <div class="page-header">
+                <H1>Clientes</H1>
+
+                <button class="btn secondary icon-btn" onclick="carregarClientes(true)" title="Recarregar Clientes">
+                    <img src="../static/icons/recarregar.png" alt="Recarregar">
+                </button>
             </div>
 
-            <div class="form-group">
-                <label>Categoria</label>
-                <input id="produto-categoria" type="text">
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nº</th>
+                            <th>Nome</th>
+                            <th>Idade</th>
+                            <th>Telefone</th>
+                            <th>Email</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="clientes-tbody">
+                        <!-- GET /clientes -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ================= PRODUTOS ================= -->
+
+        <section id="produtos" class="page">
+
+            <div class="page-actions">
+                <button class="btn primary" onclick="abrirFormulario('produto')">+ Novo Produto</button>
             </div>
 
-            <button onclick="fecharFormulario('produto')" type="button" class="btn cancel">
-                Cancelar
-            </button>
+            <!-- ================= NOVO PRODUTO ================= -->
 
-            <button id="btn-salvar-produto" class="btn primary">
-                Salvar Produto
-            </button>
-        </div>
+            <div id="form-produto" class="form-container hidden">
+                <h2>Novo Produto</h2>
 
-        <br></br>
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input id="produto-nome" type="text">
+                </div>
 
-        <div class="page-header">
-            <H1>Produtos</H1>
-            
-            <button class="btn secondary icon-btn" onclick="carregarProdutos(true)" title="Recarregar Produtos">
-                <img src="../static/icons/recarregar.png" alt="Recarregar">
-            </button>
-        </div>
-        
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Nº</th>
-                    <th>Nome</th>
-                    <th>Descrição</th>
-                    <th>Valor</th>
-                    <th>Categoria</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="produtos-tbody">
-                <!-- GET /produtos -->
-            </tbody>
-        </table>
-        <br></br>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <input id="produto-descricao" type="text">
+                </div>
 
-    </section>
+                <div class="form-group">
+                    <label>Valor</label>
+                    <input id="produto-valor" type="number" step="0.01">
+                </div>
 
-</main>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <input id="produto-categoria" type="text">
+                </div>
 
-<script src="../static/app.js"></script>
+                <button onclick="fecharFormulario('produto')" type="button" class="btn cancel">
+                    Cancelar
+                </button>
+
+                <button id="btn-salvar-produto" class="btn primary">
+                    Salvar Produto
+                </button>
+            </div>
+
+            <div class="page-header">
+                <H1>Produtos</H1>
+
+                <button class="btn secondary icon-btn" onclick="carregarProdutos(true)" title="Recarregar Produtos">
+                    <img src="../static/icons/recarregar.png" alt="Recarregar">
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nº</th>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Categoria</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="produtos-tbody">
+                        <!-- GET /produtos -->
+                    </tbody>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="../static/config.js"></script>
+    <script src="../static/api.js"></script>
+    <script src="../static/auth.js"></script>
+    <script src="../static/guard.js"></script>
+    <script>
+        verificarAuth();
+    </script>
+    <script src="../static/app.js"></script>
 
 </body>
+
 </html>

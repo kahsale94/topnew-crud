@@ -25,7 +25,7 @@ class ItemPedido(Base):
 
     num = Column(Integer, primary_key=True) 
     num_pedido = Column(Integer, ForeignKey("pedidos.num"))
-    produto_nome = Column(Text, ForeignKey("produtos.nome"))
+    num_produto = Column(Integer, ForeignKey("produtos.num"))
     quantidade = Column(Integer, nullable=False)
     valor_unitario = Column(DECIMAL, nullable=False)
 

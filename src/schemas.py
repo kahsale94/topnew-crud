@@ -14,19 +14,20 @@ class UsuarioResponse(BaseModel):
         from_attributes = True
 
 class ItemPedidoCreate(BaseModel):
-    produto_nome: str
+    num_produto: int
     quantidade: int
     valor_unitario: float
 
 class ItemPedidoUpdate(BaseModel):
-    produto_nome: str | None = None
+    num_produto: str | None = None
     quantidade: int | None = None
     valor_unitario: float | None = None
 
 class ItemPedidoResponse(BaseModel):
-    num_pedido: int
     num: int
-    produto_nome: str
+    num_pedido: int
+    num_produto: int
+    nome_produto: str
     quantidade: int
     valor_unitario: float
 
@@ -38,7 +39,6 @@ class PedidoCreate(BaseModel):
     itens: List[ItemPedidoCreate]
 
 class PedidoUpdate(BaseModel):
-    cliente_nome: str | None = None
     item: ItemPedidoUpdate | None = None
 
 class PedidoResponse(BaseModel):

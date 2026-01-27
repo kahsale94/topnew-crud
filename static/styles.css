@@ -1,3 +1,7 @@
+html, body {
+    height: 100%;
+}
+
 /* ================= RESET ================= */
 * {
     margin: 0;
@@ -9,16 +13,19 @@
 body {
     background-color: #f5f6f8;
     color: #333;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ================= HEADER ================= */
 .topbar {
-    background-color: #ffffff;
-    border-bottom: 1px solid #ddd;
-    padding: 16px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 12px 20px;
+    background: #1f2937;
+    color: white;
 }
 
 .topbar h1 {
@@ -27,11 +34,45 @@ body {
 }
 
 .user-dropdown {
-    border: 1px solid #ccc;
-    padding: 8px 14px;
+    position: absolute;
+    right: 0;
+    top: 110%;
+    background: white;
+    color: #111;
+    min-width: 200px;
+    border-radius: 6px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    padding: 10px;
+    z-index: 100;
+}
+
+.user-menu {
+    position: relative;
+}
+
+.user-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.user-email {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    word-break: break-all;
+}
+
+.logout-btn {
+    width: 100%;
+    border: none;
+    background: #ef4444;
+    color: white;
+    padding: 6px;
     border-radius: 4px;
     cursor: pointer;
-    background: #fff;
 }
 
 /* ================= TABS ================= */
@@ -67,15 +108,36 @@ body {
     padding: 24px;
     border: 1px solid #ddd;
     border-top: none;
+    flex: 1;
+    overflow: hidden;
 }
 
 /* ================= PAGES ================= */
 .page {
     display: none;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.page-fixed {
+    flex-shrink: 0;
+}
+
+.page-scroll {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .page.active {
-    display: block;
+    display: flex;
+}
+
+.page-actions {
+    display: flex;
+    justify-content: flex-start;
 }
 
 /* ================= BUTTONS ================= */
@@ -130,9 +192,12 @@ body {
 /* ================= PAGE HEADER ================= */
 .page-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-bottom: 5px;
+    align-items: center;
+    padding: 12px 4px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    flex-shrink: 0;
 }
 
 /* ================= TOOLBAR ================= */
@@ -154,7 +219,7 @@ body {
     border: 1px solid #ccc;
 }
 
-/* ================= TABLE ================= */
+/* ================= TABELA ================= */
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -180,6 +245,29 @@ body {
 
 .data-table tbody tr:hover {
     background-color: #f5f6f8;
+}
+
+.pedido-row:hover {
+    background-color: #f0f4ff;
+}
+
+.pedido-detalhes td {
+    background-color: #fafafa;
+}
+
+/* ================= TABELA COM SCROLL ================= */
+
+.table-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.table-body-scroll {
+    flex: 1;
+    overflow-y: auto;
 }
 
 /* ================= STATUS ================= */

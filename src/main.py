@@ -28,3 +28,7 @@ app.include_router(auth_routes.router)
 def home(request: Request):
     return templates.TemplateResponse(request, "index.html")
 
+@app.get("/login")
+def login_page(request: Request):
+    return templates.TemplateResponse(request, "login.html")
+

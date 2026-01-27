@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from src.database import db_dependecy
 from src.schemas import ProdutoCreate, ProdutoResponse, ProdutoUpdate
 from src.repositories.produtos_repo import ProdutoRepository
+from src.security.security import Security
 
-router = APIRouter(prefix="/produtos", tags=["Produtos"])
+router = APIRouter(prefix="/produtos", tags=["Produtos"], dependencies=[Depends(Security.get_current_user)])
 repo = ProdutoRepository()
 
 @router.get("/", response_model=list[ProdutoResponse])

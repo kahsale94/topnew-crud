@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from src.database import db_dependecy
 from src.schemas import ClienteCreate, ClienteResponse, ClienteUpdate
 from src.repositories.clientes_repo import ClienteRepository
+from src.security.security import Security
 
-router = APIRouter(prefix="/clientes", tags=["Clientes"])
+router = APIRouter(prefix="/clientes", tags=["Clientes"], dependencies=[Depends(Security.get_current_user)])
 repo = ClienteRepository()
 
 @router.get("/", response_model=list[ClienteResponse])
