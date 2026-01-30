@@ -1,6 +1,6 @@
 const API_BASE = window.APP_CONFIG.API_BASE;
 
-async function api(url, method = "GET", body = null) {
+async function api(url, method = "GET", body = null, retry = true) {
     const token = localStorage.getItem("access_token");
     
     const headers = {
@@ -23,12 +23,14 @@ async function api(url, method = "GET", body = null) {
     const response = await fetch(url, options);
     
     if (response.status === 401 && retry) {
-        const refreshed = await refreshAccessToken();
+        const refreshed = await refreshToken();
 
         if (!refreshed) {
             localStorage.clear();
-            window.location.href = "/login";
-            throw new Error("Sessão expirada");
+            throw {
+                status: 401,
+                message: "Sessão expirada"
+            };
         }
 
         return api(url, method, body, false);
@@ -38,10 +40,21 @@ async function api(url, method = "GET", body = null) {
         logout();
         throw new Error("Não autorizado");
     }
-    
+
     if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text);
+        let message = "Erro inesperado";
+
+        try {
+            const errorData = await response.json();
+            message = errorData.detail || message;
+        } catch {
+            // resposta não JSON
+        }
+
+        throw {
+            status: response.status,
+            message
+        };
     }
     
     return response.json();

@@ -3,12 +3,11 @@ from src.models import Cliente
 
 class ClienteRepository:
 
-    def criar_cliente(self, db: Session, nome: str, idade: int, telefone: int, email: str):
+    def criar_cliente(self, db: Session, nome: str, telefone: int, endereco: str):
         cliente = Cliente(
             nome = nome,
-            idade = idade,
             telefone = telefone,
-            email = email
+            endereco = endereco
             )
         
         db.add(cliente)
@@ -16,19 +15,21 @@ class ClienteRepository:
         db.refresh(cliente)
         return cliente
 
-    def atualizar_cliente(self, db: Session, num: int, nome: str, idade: int, telefone: int, email: str):
+    def atualizar_cliente(self, db: Session, num: int, nome: str, telefone: int, endereco: str):
         cliente = db.query(Cliente).filter(Cliente.num == num).first()
         if not cliente:
             return None
-        
+
         if nome is not None:
+            nomes_clientes = db.query(Cliente).all()
+            for n in nomes_clientes:
+                if nome == n.nome:
+                    return False
             cliente.nome = nome
-        if idade is not None:
-            cliente.idade = idade
         if telefone is not None:
             cliente.telefone = telefone
-        if email is not None:
-            cliente.email = email
+        if endereco is not None:
+            cliente.endereco = endereco
 
         db.commit()
         db.refresh(cliente)

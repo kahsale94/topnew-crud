@@ -3,11 +3,12 @@ from src.models import Produto
 
 class ProdutoRepository:
 
-    def criar_produto(self, db: Session, nome: str, descricao: str, valor: float, categoria: str):
+    def criar_produto(self, db: Session, nome: str, descricao: str, valor_compra: float, valor_venda: float, categoria: str):
         produto = Produto(
             nome = nome,
             descricao = descricao,
-            valor = valor,
+            valor_compra = valor_compra,
+            valor_venda = valor_venda,
             categoria = categoria
             )
         
@@ -16,17 +17,23 @@ class ProdutoRepository:
         db.refresh(produto)
         return produto
     
-    def atualizar_produto(self, db: Session, num: int, nome: str, descricao: str, valor: float, categoria: str):
+    def atualizar_produto(self, db: Session, num: int, nome: str, descricao: str, valor_compra: float, valor_venda: float, categoria: str):
         produto = db.query(Produto).filter(Produto.num == num).first()
         if not produto:
             return None
         
         if nome is not None:
+            nomes_produtos = db.query(Produto).all()
+            for n in nomes_produtos:
+                if nome == n.nome:
+                    return False
             produto.nome = nome
         if descricao is not None:
             produto.descricao = descricao
-        if valor is not None:
-            produto.valor = valor
+        if valor_compra is not None:
+            produto.valor_compra = valor_compra
+        if valor_venda is not None:
+            produto.valor_venda = valor_venda
         if categoria is not None:
             produto.categoria = categoria
 

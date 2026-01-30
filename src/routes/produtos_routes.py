@@ -17,11 +17,13 @@ def selecionar_produto(num: int, db: db_dependecy):
 
 @router.post("/produtos", response_model=ProdutoResponse)
 def criar_produto(produto: ProdutoCreate, db: db_dependecy):
-    return repo.criar_produto(db, produto.nome, produto.descricao, produto.valor, produto.categoria)
+    return repo.criar_produto(db, produto.nome, produto.descricao, produto.valor_compra, produto.valor_venda, produto.categoria)
 
 @router.put("/produtos/{num}", response_model= ProdutoResponse)
 def atualizar_produto(num: int, produto: ProdutoUpdate, db: db_dependecy):
-    atualizado = repo.atualizar_produto(db, num, produto.nome, produto.descricao, produto.valor, produto.categoria)
+    atualizado = repo.atualizar_produto(db, num, produto.nome, produto.descricao, produto.valor_compra, produto.valor_venda, produto.categoria)
+    if atualizado is False:
+        raise HTTPException(status_code=404, detail="Produto ja cadastrado!")
     if not atualizado:
         raise HTTPException(status_code=404, detail="Produto não encontrado")
     return atualizado

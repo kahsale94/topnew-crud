@@ -109,26 +109,14 @@ body {
     border: 1px solid #ddd;
     border-top: none;
     flex: 1;
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 /* ================= PAGES ================= */
 .page {
     display: none;
     flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-}
-
-.page-fixed {
-    flex-shrink: 0;
-}
-
-.page-scroll {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    min-height: 100%
 }
 
 .page.active {
@@ -244,30 +232,28 @@ body {
 }
 
 .data-table tbody tr:hover {
-    background-color: #f5f6f8;
+    background-color: #e9e9e9;
 }
 
-.pedido-row:hover {
-    background-color: #f0f4ff;
+.data-table tbody tr input {
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    width: 60%;
+    padding: 3px 4px;
+}
+
+.select-produto {
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 3px 4px;
+    cursor: pointer;
+    outline: none;
 }
 
 .pedido-detalhes td {
     background-color: #fafafa;
-}
-
-/* ================= TABELA COM SCROLL ================= */
-
-.table-container {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    margin-top: 8px;
-    overflow: hidden;
-}
-
-.table-body-scroll {
-    flex: 1;
-    overflow-y: auto;
 }
 
 /* ================= STATUS ================= */
@@ -309,6 +295,36 @@ body {
     width: 100%;
     padding: 10px;
     border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: -10px;
+    margin-bottom: 16px;
+}
+
+.checkbox-group label {
+    display: block;
+    margin-bottom: 6px;
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+.checkbox-group input {
+    height: 20px;
+    width: 20px;
+    margin-left: 5px;
+    accent-color: green;
     border: 1px solid #ccc;
 }
 
@@ -365,7 +381,7 @@ body {
     width: 50%;
     background: #fff;
     padding: 16px;
-    margin: 16px 0;
+    margin: 16px 6px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0,.1);
 }
@@ -381,4 +397,40 @@ body {
     border: none;
     font-size: 20px;
     cursor: pointer;
+}
+
+/* ================= AVISOS ================= */
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #e74c3c;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.2);
+    z-index: 9999;
+}
+
+.toast.hidden {
+    display: none;
+}
+
+/* ================= SELECTS ================= */
+
+.select {
+    width: 40%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.select:focus {
+    outline: none;
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
 }

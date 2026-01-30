@@ -5,6 +5,12 @@ let produtosCache = [];
 let cachePedidos = null;
 let cacheClientes = null;
 let cacheProdutos = null;
+let cacheFormasPagamento = [
+    "Cartão de Crédito",
+    "Cartão de Débito",
+    "Pix",
+    "Dinheiro",
+];
 let cacheItensPedido = {};
 let pedidoAbertoAtual = null;
 let detalhesAbertosAtual = null;
@@ -14,6 +20,8 @@ let clienteEditando = null;
 let backupCliente = null;
 let produtoEditando = null;
 let backupProduto = null;
+let pedidoEditando = null;
+let backupPedido = null;
 
 /* ================= TABS ================= */
 
@@ -50,8 +58,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (!verificarAuth()) return;
 
-    await carregarUsuarioLogado();
-
     const btn = document.getElementById("user-btn");
     const dropdown = document.getElementById("user-dropdown");
     const logoutBtn = document.getElementById("logout-btn");
@@ -79,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             quantidade: 1,
             valor_unitario: 0
         });
-        renderizarItens();
+        renderItensNovoPedido();
     });
 
     document.getElementById("btn-salvar-pedido")?.addEventListener("click", salvarPedido);
@@ -101,6 +107,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             await carregarProdutos();
             break;
     }
+
+    await carregarUsuarioLogado();
 });
 
 
@@ -108,28 +116,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function carregarClientes(force = false) {
     if (cacheClientes && !force) {
-        renderizarProdutos(cacheClientes);
+        renderProdutos(cacheClientes);
         return;
     }
 
     try {
         const clientes = await api(`${API_BASE}/clientes/`);
         cacheClientes = clientes;
-        renderizarClientes(clientes);
+        renderClientes(clientes);
+        atualizarListaClientesAutocomplete();
     } catch (error) {
         console.error(error);
         tbody.innerHTML = `<tr><td colspan="6">Erro ao carregar clientes</td></tr>`;
+        handleApiError(error);
     }
 }
 
-function renderizarClientes(clientes) {
+function renderClientes(clientes) {
     const tbody = document.getElementById("clientes-tbody");
     tbody.innerHTML = "";
 
     clientes.forEach(cliente => {
         tbody.innerHTML += clienteEditando === cliente.num
-            ? renderLinhaClienteEdicao(cliente)
-            : renderLinhaClienteNormal(cliente);
+            ? renderEdicaoClientes(cliente)
+            : renderNormalClientes(cliente);
     });
 }
 
@@ -139,32 +149,52 @@ function editarCliente(clienteNum) {
     clienteEditando = clienteNum;
     backupCliente = { ...cacheClientes.find(c => c.num === clienteNum) };
 
-    renderizarClientes(cacheClientes);
+    renderClientes(cacheClientes);
 }
 
 async function salvarEdicaoCliente(clienteNum) {
     const tr = document.querySelector('tr[data-editando="true"]');
 
+    if (!tr.querySelector('[data-f="nome"]').value) {
+        mostrarErro("Informe o nome do cliente!");
+        return;
+    }
+
+    if (!tr.querySelector('[data-f="telefone"]').value) {
+        mostrarErro("Informe o telefone do cliente!");
+        return;
+    }
+
+    if (!tr.querySelector('[data-f="endereo"]').value) {
+        mostrarErro("Informe o endereço do cliente!");
+        return;
+    }
+
     const data = {
         nome: tr.querySelector('[data-f="nome"]').value,
-        idade: Number(tr.querySelector('[data-f="idade"]').value) || null,
         telefone: tr.querySelector('[data-f="telefone"]').value,
-        email: tr.querySelector('[data-f="email"]').value || null
+        endereco: tr.querySelector('[data-f="endereco"]').value
     };
 
-    await api(`${API_BASE}/clientes/clientes/${clienteNum}`, "PUT", data);
+    try{
+        await api(`${API_BASE}/clientes/clientes/${clienteNum}`, "PUT", data);
+        
+        clienteEditando = null;
+        backupCliente = null;
 
-    clienteEditando = null;
-    backupCliente = null;
+        cacheClientes = null;
+        carregarClientes(true);
 
-    cacheClientes = null;
-    carregarClientes(true);
+    } catch (error) {
+        console.error(error);
+        handleApiError(error);
+    }
 }
 
 function cancelarEdicaoCliente() {
     clienteEditando = null;
     backupCliente = null;
-    renderizarClientes(cacheClientes);
+    renderClientes(cacheClientes);
 }
 
 async function excluirCliente(clienteNum) {
@@ -176,14 +206,13 @@ async function excluirCliente(clienteNum) {
     carregarClientes(true);
 }
 
-function renderLinhaClienteNormal(c) {
+function renderNormalClientes(c) {
     return `
         <tr>
             <td>${c.num}</td>
             <td>${c.nome}</td>
-            <td>${c.idade ?? "-"}</td>
             <td>${c.telefone}</td>
-            <td>${c.email ?? "-"}</td>
+            <td>${c.endereco}</td>
             <td>
                 <button onclick="editarCliente(${c.num})">✏️</button>
                 <button onclick="excluirCliente(${c.num})">🗑️</button>
@@ -192,14 +221,13 @@ function renderLinhaClienteNormal(c) {
     `;
 }
 
-function renderLinhaClienteEdicao(c) {
+function renderEdicaoClientes(c) {
     return `
         <tr data-editando="true">
             <td>${c.num}</td>
             <td><input value="${c.nome}" data-f="nome"></td>
-            <td><input type="number" value="${c.idade ?? ""}" data-f="idade"></td>
             <td><input value="${c.telefone}" data-f="telefone"></td>
-            <td><input value="${c.email ?? ""}" data-f="email"></td>
+            <td><input value="${c.endereco}" data-f="endereco"></td>
             <td>
                 <button onclick="salvarEdicaoCliente(${c.num})">✅</button>
                 <button onclick="cancelarEdicaoCliente()">❌</button>
@@ -211,20 +239,24 @@ function renderLinhaClienteEdicao(c) {
 async function salvarCliente() {
 
     if (!document.getElementById("cliente-nome").value) {
-        alert("Informe o nome do cliente!");
+        mostrarErro("Informe o nome do cliente!")
         return;
     }
 
     if (!document.getElementById("cliente-telefone").value) {
-        alert("Informe o telefone do cliente!");
+        mostrarErro("Informe o telefone do cliente!");
+        return;
+    }
+
+    if (!document.getElementById("cliente-endereco").value) {
+        mostrarErro("Informe o endereço do cliente!");
         return;
     }
 
     const data = {
         nome: document.getElementById("cliente-nome").value,
-        idade: Number(document.getElementById("cliente-idade").value) || null,
         telefone: document.getElementById("cliente-telefone").value,
-        email: document.getElementById("cliente-email").value || null
+        endereco: document.getElementById("cliente-endereco").value
     };
 
     await api(`${API_BASE}/clientes/clientes`, "POST", data);
@@ -237,38 +269,40 @@ async function salvarCliente() {
 
 async function carregarProdutos(force = false) {
     if (cacheProdutos && !force) {
-        renderizarProdutos(cacheProdutos);
+        renderProdutos(cacheProdutos);
         return;
     }
 
     try {
         const produtos = await api(`${API_BASE}/produtos/`);
         cacheProdutos = produtos;
-        renderizarProdutos(produtos);
+        renderProdutos(produtos);
     } catch (error) {
         console.error(error);
         tbody.innerHTML = `<tr><td colspan="6">Erro ao carregar produtos</td></tr>`;
+        handleApiError(error);
     }
 }
 
-function renderizarProdutos(produtos) {
+function renderProdutos(produtos) {
     const tbody = document.getElementById("produtos-tbody");
     tbody.innerHTML = "";
 
     produtos.forEach(produto => {
         tbody.innerHTML += produtoEditando === produto.num
-            ? renderLinhaProdutoEdicao(produto)
-            : renderLinhaProdutoNormal(produto);
+            ? renderEdicaoProdutos(produto)
+            : renderNormalProdutos(produto);
     });
 }
 
-function renderLinhaProdutoNormal(p) {
+function renderNormalProdutos(p) {
     return `
         <tr>
             <td>${p.num}</td>
             <td>${p.nome}</td>
             <td>${p.descricao ?? "-"}</td>
-            <td>R$ ${Number(p.valor).toFixed(2)}</td>
+            <td>R$ ${Number(p.valor_compra).toFixed(2)}</td>
+            <td>R$ ${Number(p.valor_venda).toFixed(2)}</td>
             <td>${p.categoria ?? "-"}</td>
             <td>
                 <button onclick="editarProduto(${p.num})">✏️</button>
@@ -278,13 +312,14 @@ function renderLinhaProdutoNormal(p) {
     `;
 }
 
-function renderLinhaProdutoEdicao(p) {
+function renderEdicaoProdutos(p) {
     return `
         <tr data-editando="true">
             <td>${p.num}</td>
             <td><input value="${p.nome}" data-f="nome"></td>
             <td><input value="${p.descricao ?? ""}" data-f="descricao"></td>
-            <td><input type="number" step="0.01" value="${p.valor}" data-f="valor"></td>
+            <td><input type="number" step="0.01" value="${p.valor_compra}" data-f="valor_compra"></td>
+            <td><input type="number" step="0.01" value="${p.valor_venda}" data-f="valor_venda"></td>
             <td><input value="${p.categoria ?? ""}" data-f="categoria"></td>
             <td>
                 <button onclick="salvarEdicaoProduto(${p.num})">✅</button>
@@ -300,32 +335,64 @@ function editarProduto(produtoNum) {
     produtoEditando = produtoNum;
     backupProduto = { ...cacheProdutos.find(p => p.num === produtoNum) };
 
-    renderizarProdutos(cacheProdutos);
+    renderProdutos(cacheProdutos);
 }
 
 async function salvarEdicaoProduto(produtoNum) {
     const tr = document.querySelector('tr[data-editando="true"]');
 
+    if (!tr.querySelector('[data-f="nome"]').value) {
+        mostrarErro("Informe o nome do produto!");
+        return;
+    }
+
+    if (!tr.querySelector('[data-f="valor_compra"]').value) {
+        mostrarErro("Informe o valor de compra do produto!");
+        return;
+    }
+
+    if (Number(tr.querySelector('[data-f="valor_compra"]').value) <= 0) {
+        mostrarErro("Valor de compra precisa ser maior que 0!");
+        return;
+    }
+
+    if (!tr.querySelector('[data-f="valor_venda"]').value) {
+        mostrarErro("Informe o valor de venda do produto!");
+        return;
+    }
+
+    if (Number(tr.querySelector('[data-f="valor_venda"]').value) <= 0) {
+        mostrarErro("Valor de venda precisa ser maior que 0!");
+        return;
+    }
+
     const data = {
         nome: tr.querySelector('[data-f="nome"]').value,
         descricao: tr.querySelector('[data-f="descricao"]').value || null,
-        valor: Number(tr.querySelector('[data-f="valor"]').value),
+        valor_compra: Number(tr.querySelector('[data-f="valor_compra"]').value),
+        valor_venda: Number(tr.querySelector('[data-f="valor_venda"]').value),
         categoria: tr.querySelector('[data-f="categoria"]').value || null
     };
 
-    await api(`${API_BASE}/produtos/produtos/${produtoNum}`, "PUT", data);
+    try{
+        await api(`${API_BASE}/produtos/produtos/${produtoNum}`, "PUT", data);
 
-    produtoEditando = null;
-    backupProduto = null;
+        produtoEditando = null;
+        backupProduto = null;
+        cacheProdutos = null;
 
-    cacheProdutos = null;
-    carregarProdutos(true);
+        carregarProdutos(true);
+    
+    } catch (error) {
+        console.error(error);
+        handleApiError(error);
+    }
 }
 
 function cancelarEdicaoProduto() {
     produtoEditando = null;
     backupProduto = null;
-    renderizarProdutos(cacheProdutos);
+    renderProdutos(cacheProdutos);
 }
 
 async function excluirProduto(produtoNum) {
@@ -340,24 +407,36 @@ async function excluirProduto(produtoNum) {
 async function salvarProduto() {
 
     if (!document.getElementById("produto-nome").value) {
-        alert("Informe o nome do produto!");
+        mostrarErro("Informe o nome do produto!");
         return;
     }
 
-    if (!document.getElementById("produto-valor").value) {
-        alert("Informe o valor do produto!");
+    if (!document.getElementById("produto-valor_compra").value) {
+        mostrarErro("Informe o valor de compra do produto!");
         return;
     }
 
-    if (document.getElementById("produto-valor").value <= 0) {
-        alert("Valor precisa ser maior que 0!");
+    if (document.getElementById("produto-valor_compra").value <= 0) {
+        mostrarErro("Valor de compra precisa ser maior que 0!");
+        return;
+    }
+
+    if (!document.getElementById("produto-valor_venda").value) {
+        mostrarErro("Informe o valor de venda do produto!");
+        return;
+    }
+
+
+    if (document.getElementById("produto-valor_venda").value <= 0) {
+        mostrarErro("Valor de venda precisa ser maior que 0!");
         return;
     }
 
     const data = {
         nome: document.getElementById("produto-nome").value,
         descricao: document.getElementById("produto-descricao").value || null,
-        valor: Number(document.getElementById("produto-valor").value),
+        valor_compra: Number(document.getElementById("produto-valor_compra").value),
+        valor_venda: Number(document.getElementById("produto-valor_venda").value),
         categoria: document.getElementById("produto-categoria").value || null
     };
 
@@ -371,26 +450,29 @@ async function salvarProduto() {
 
 async function carregarPedidos(force = false) {
     if (cachePedidos && !force) {
-        renderizarPedidos(cachePedidos);
+        renderPedidos(cachePedidos);
         return;
     }
 
     try {
         const pedidos = await api(`${API_BASE}/pedidos/`);
         cachePedidos = pedidos;
-        renderizarPedidos(pedidos);
+        renderPedidos(pedidos);
     } catch (error) {
         console.error(error);
         tbody.innerHTML = `<tr><td colspan="6">Erro ao carregar pedidos</td></tr>`;
+        handleApiError(error);
     }
 }
 
-function renderizarPedidos(pedidos) {
+function renderPedidos(pedidos) {
     const tbody = document.getElementById("pedidos-tbody");
     tbody.innerHTML = "";
 
-    pedidoAbertoAtual = null;
-    detalhesAbertosAtual = null;
+    if (!pedidoEditando) {
+        pedidoAbertoAtual = null;
+        detalhesAbertosAtual = null;
+    }
 
     pedidos.forEach(pedido => {
 
@@ -398,16 +480,12 @@ function renderizarPedidos(pedidos) {
         trPedido.classList.add("pedido-row");
         trPedido.style.cursor = "pointer";
 
-        trPedido.innerHTML = `
-            <td>${pedido.num}</td>
-            <td>${pedido.cliente_nome}</td>
-            <td>${new Date(pedido.data).toLocaleDateString("pt-BR")}</td>
-            <td>R$ ${Number(pedido.valor).toFixed(2)}</td>
-            <td>
-                <button onclick="event.stopPropagation(); excluirPedido(${pedido.num})">🗑️</button>
-            </td>
-            <td class="icone-toggle">🔽</td>
-        `;
+        if (pedidoEditando && pedidoEditando == pedido.num) {
+            trPedido.setAttribute("data-editando", "true");
+            trPedido.innerHTML = renderEdicaoPedidos(pedido);
+        } else {
+            trPedido.innerHTML = renderNormalPedidos(pedido);
+        }
 
         const trDetalhes = document.createElement("tr");
         trDetalhes.classList.add("pedido-detalhes", "hidden");
@@ -421,6 +499,10 @@ function renderizarPedidos(pedidos) {
         `;
 
         trPedido.addEventListener("click", async () => {
+
+            if (pedidoEditando && pedidoEditando === pedido.num) {
+                return;
+            }
 
             if (pedidoAbertoAtual === trPedido) {
                 trDetalhes.classList.toggle("hidden");
@@ -440,14 +522,14 @@ function renderizarPedidos(pedidos) {
             detalhesAbertosAtual = trDetalhes;
 
             if (cacheItensPedido[pedido.num]) {
-                renderizarItensPedido(trDetalhes, cacheItensPedido[pedido.num], pedido.num);
+                renderItensPedido(trDetalhes, cacheItensPedido[pedido.num], pedido.num);
                 return;
             }
             else
                 try {
                     const itens = await api(`${API_BASE}/pedidos/${pedido.num}`);
                     cacheItensPedido[pedido.num] = itens;
-                    renderizarItensPedido(trDetalhes, cacheItensPedido[pedido.num], pedido.num);
+                    renderItensPedido(trDetalhes, cacheItensPedido[pedido.num], pedido.num);
                 } catch (error) {
                     trDetalhes.querySelector(".pedido-detalhes-container").innerHTML =
                         "<p>Erro ao carregar itens</p>";
@@ -459,6 +541,117 @@ function renderizarPedidos(pedidos) {
         tbody.appendChild(trDetalhes);
     });
 }
+
+function renderNormalPedidos(pedido) {
+
+    return `
+        <td>${pedido.num}</td>
+        <td>${pedido.nome_cliente}</td>
+        <td>${new Date(pedido.data).toLocaleDateString("pt-BR")}</td>
+        <td>R$ ${Number(pedido.valor).toFixed(2)}</td>
+        <td>${pedido.forma_pagamento}</td>
+        <td>
+            <span class="status ${pedido.pago ? "paid" : "pending"}">
+                ${pedido.pago ? "✅ Pago" : "⏳ Pendente"}
+            </span>
+        </td>
+        <td class="icone-toggle">🔽</td>
+        <td>
+            <button onclick="event.stopPropagation(); editarPedido(${pedido.num})">✏️</button>
+            <button onclick="event.stopPropagation(); excluirPedido(${pedido.num})">🗑️</button>
+        </td>
+    `;
+}
+
+function renderEdicaoPedidos(pedido) {
+    return `
+        <td>${pedido.num}</td>
+
+        <td>
+            <select data-f="num_cliente">
+                ${cacheClientes.map(c =>
+                    `<option value="${c.num}" ${c.num === pedido.num_cliente ? "selected" : ""}>
+                        ${c.nome}
+                    </option>`
+                ).join("")}
+            </select>
+        </td>
+
+        <td>${new Date(pedido.data).toLocaleDateString("pt-BR")}</td>
+
+        <td>R$ ${Number(pedido.valor).toFixed(2)}</td>
+
+        <td>
+            <select data-f="forma_pagamento">
+                ${cacheFormasPagamento.map(f =>
+                    `<option value="${f}" ${f === pedido.forma_pagamento ? "selected" : ""}>
+                        ${f}
+                    </option>`
+                ).join("")}
+            </select>
+        </td>
+
+        <td>
+            <input type="checkbox" data-f="pago" ${pedido.pago ? "checked" : ""}>
+        </td>
+
+        <td class="icone-toggle"></td>
+
+        <td>
+            <button onclick="salvarEdicaoPedido(${pedido.num})">✅</button>
+            <button onclick="cancelarEdicaoPedido()">❌</button>
+        </td>
+    `;
+}
+
+async function editarPedido(pedidoNum) {
+    if (pedidoEditando) return;
+
+    if (!cacheClientes) {
+        await carregarClientes(true);
+    }
+
+    pedidoEditando = pedidoNum;
+    backupPedido = { ...cachePedidos.find(p => p.num === pedidoNum) };
+
+    renderPedidos(cachePedidos);
+}
+
+async function salvarEdicaoPedido(pedidoNum) {
+    const tr = document.querySelector('tr[data-editando="true"]');
+
+    if (!tr) {
+        mostrarErro("Linha em edição não encontrada");
+        return;
+    }
+
+    const data = {
+        num_cliente: Number(tr.querySelector('[data-f="num_cliente"]').value),
+        forma_pagamento: tr.querySelector('[data-f="forma_pagamento"]').value,
+        pago: tr.querySelector('[data-f="pago"]').checked
+    };
+
+    try {
+        await api(`${API_BASE}/pedidos/pedidos/${pedidoNum}`, "PUT", data);
+
+        pedidoEditando = null;
+        backupPedido = null;
+
+        cachePedidos = null;
+        carregarPedidos(true);
+
+    } catch (error) {
+        console.error(error);
+        handleApiError(error);
+    }
+}
+
+function cancelarEdicaoPedido() {
+    pedidoEditando = null;
+    backupPedido = null;
+    renderPedidos(cachePedidos);
+}
+
 
 async function excluirPedido(pedidoNum) {
     if (!confirm("Deseja excluir este pedido?")) return;
@@ -473,11 +666,11 @@ async function excluirPedido(pedidoNum) {
 
 /* ================= ITENS PEDIDOS ================= */
 
-function renderizarItensPedido(trDetalhes, itens, pedidoNum) {
+function renderItensPedido(trDetalhes, itens, pedidoNum) {
     const container = trDetalhes.querySelector(".pedido-detalhes-container");
 
     container.innerHTML = `
-        <table class="data-table" style="width: 90%">
+        <table class="data-table" style="width: 85%">
             <thead>
                 <tr>
                     <th>Produto</th>
@@ -492,15 +685,15 @@ function renderizarItensPedido(trDetalhes, itens, pedidoNum) {
         itemEditando &&
             itemEditando.pedidoNum === pedidoNum &&
             itemEditando.itemNum === item.num
-            ? renderLinhaEdicao(item, pedidoNum)
-            : renderLinhaNormal(item, pedidoNum)
+            ? renderEdicaoItensPedido(item, pedidoNum)
+            : renderNormalItensPedido(item, pedidoNum)
     ).join("")}
             </tbody>
         </table>
     `;
 }
 
-function renderLinhaNormal(item, pedidoNum) {
+function renderNormalItensPedido(item, pedidoNum) {
     return `
         <tr>
             <td>${produtosCache.find(p => p.num === item.num_produto)?.nome ?? "Produto removido"}</td>
@@ -508,18 +701,18 @@ function renderLinhaNormal(item, pedidoNum) {
             <td>R$ ${Number(item.valor_unitario).toFixed(2)}</td>
             <td>R$ ${(item.quantidade * item.valor_unitario).toFixed(2)}</td>
             <td>
-                <button onclick="event.stopPropagation(); editarItem(${pedidoNum}, ${item.num})">✏️</button>
-                <button onclick="event.stopPropagation(); excluirItem(${pedidoNum}, ${item.num})">🗑️</button>
+                <button onclick="event.stopPropagation(); editarItemPedido(${pedidoNum}, ${item.num})">✏️</button>
+                <button onclick="event.stopPropagation(); excluirItemPedido(${pedidoNum}, ${item.num})">🗑️</button>
             </td>
         </tr>
     `;
 }
 
-function renderLinhaEdicao(item, pedidoNum) {
+function renderEdicaoItensPedido(item, pedidoNum) {
     return `
         <tr data-editando="true">
             <td>
-                <select data-f="num_produto" class="select-produto">
+                <select data-f="num_produto">
                     ${produtosCache.map(p =>
                         `<option value="${p.num}" ${p.num === item.num_produto ? "selected" : ""}>
                             ${p.nome}
@@ -531,15 +724,15 @@ function renderLinhaEdicao(item, pedidoNum) {
             <td><input type="number" step="0.01" value="${item.valor_unitario}" data-f="valor_unitario"></td>
             <td data-subtotal></td>
             <td>
-                <button onclick="salvarEdicaoItem(${pedidoNum}, ${item.num})">✅</button>
-                <button onclick="cancelarEdicao()">❌</button>
+                <button onclick="salvarEdicaoItemPedido(${pedidoNum}, ${item.num})">✅</button>
+                <button onclick="cancelarEdicaoItemPedido()">❌</button>
             </td>
         </tr>
     `;
 }
 
 
-function editarItem(pedidoNum, itemNum) {
+function editarItemPedido(pedidoNum, itemNum) {
     if (itemEditando) return;
 
     itemEditando = { pedidoNum, itemNum };
@@ -549,7 +742,7 @@ function editarItem(pedidoNum, itemNum) {
             .find(i => i.num === itemNum)
     };
 
-    renderizarItensPedido(detalhesAbertosAtual, cacheItensPedido[pedidoNum], pedidoNum);
+    renderItensPedido(detalhesAbertosAtual, cacheItensPedido[pedidoNum], pedidoNum);
 
     const trEditando = detalhesAbertosAtual.querySelector('tr[data-editando="true"]');
     if (trEditando) {
@@ -557,38 +750,39 @@ function editarItem(pedidoNum, itemNum) {
     }
 }
 
-async function salvarEdicaoItem(pedidoNum, itemNum) {
-    console.log("Funcionando");
+async function salvarEdicaoItemPedido(pedidoNum, itemNum) {
+
     const tr = detalhesAbertosAtual.querySelector('tr[data-editando="true"]');
 
     if (!tr) {
-        alert("Linha em edição não encontrada");
+        mostrarErro("Linha em edição não encontrada");
         return;
     }
 
-    const produtoSelecionado =
-        tr.querySelector('[data-f="num_produto"]').value;
-
-    const quantidade = Number(
-        tr.querySelector('[data-f="quantidade"]').value
-    );
-
-    const valor_unitario = Number(
-        tr.querySelector('[data-f="valor_unitario"]').value
-    );
-
-    if (!produtoSelecionado || quantidade <= 0 || valor_unitario <= 0) {
-        alert("Valores inválidos");
+    if (!Number(tr.querySelector('[data-f="num_produto"]').value)) {
+        mostrarErro("Informe o produto!");
         return;
     }
 
-    await api(`${API_BASE}/pedidos/pedidos/${pedidoNum}/${itemNum}`, "PUT", {
+    if (!Number(tr.querySelector('[data-f="quantidade"]').value)) {
+        mostrarErro("Informe o quantidade!");
+        return;
+    }
+
+    if (Number(tr.querySelector('[data-f="valor_unitario"]').value) <= 0) {
+        mostrarErro("Valor precisa ser mais que 0!");
+        return;
+    }
+
+    const data = {
         item: {
-            num_produto: produtoSelecionado,
-            quantidade: quantidade,
-            valor_unitario: valor_unitario
+            num_produto: Number(tr.querySelector('[data-f="num_produto"]').value),
+            quantidade: Number(tr.querySelector('[data-f="quantidade"]').value),
+            valor_unitario: Number(tr.querySelector('[data-f="valor_unitario"]').value)
         }
-    });
+    };
+
+    await api(`${API_BASE}/pedidos/pedidos/${pedidoNum}/${itemNum}`, "PUT", data);
 
     itemEditando = null;
     backupItem = null;
@@ -598,26 +792,26 @@ async function salvarEdicaoItem(pedidoNum, itemNum) {
     const itensAtualizados = await api(`${API_BASE}/pedidos/${pedidoNum}`);
     cacheItensPedido[pedidoNum] = itensAtualizados;
 
-    renderizarItensPedido(detalhesAbertosAtual, itensAtualizados, pedidoNum);
+    renderItensPedido(detalhesAbertosAtual, itensAtualizados, pedidoNum);
     carregarPedidos(true);
 }
 
 
-function cancelarEdicao() {
+function cancelarEdicaoItemPedido() {
     const { pedidoNum } = itemEditando;
 
     itemEditando = null;
     backupItem = null;
 
-    renderizarItensPedido(detalhesAbertosAtual, cacheItensPedido[pedidoNum], pedidoNum);
+    renderItensPedido(detalhesAbertosAtual, cacheItensPedido[pedidoNum], pedidoNum);
 
     const trEditando = detalhesAbertosAtual.querySelector('tr[data-editando="true"]');
     if (trEditando) {
-        ativarEventosEdicao(trEditando);
+        eventosEdicaoItemPedido(trEditando);
     }
 }
 
-async function excluirItem(pedidoNum, itemNum) {
+async function excluirItemPedido(pedidoNum, itemNum) {
     if (!confirm("Deseja remover este item?")) return;
 
     await api(`${API_BASE}/pedidos/pedidos/${pedidoNum}/${itemNum}`, "DELETE");
@@ -628,7 +822,7 @@ async function excluirItem(pedidoNum, itemNum) {
     carregarPedidos(true);
 }
 
-function ativarEventosEdicao(tr) {
+function eventosEdicaoItemPedido(tr) {
     tr.querySelectorAll("input, select").forEach(el => {
         el.addEventListener("input", () => {
             atualizarSubtotalEdicao(tr);
@@ -640,7 +834,7 @@ function ativarEventosEdicao(tr) {
 
 /* ================= NOVO PEDIDO FORMULARIO ================= */
 
-function renderizarItens() {
+function renderItensNovoPedido() {
     const tbody = document.getElementById("itens-pedido-tbody");
     tbody.innerHTML = "";
 
@@ -648,7 +842,7 @@ function renderizarItens() {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td>
-                <select data-i="${index}" data-f="num_produto" class="select-produto">
+                <select class="select-produto" data-i="${index}" data-f="num_produto">
                     <option value="">Selecione</option>
                     ${produtosCache.map(p =>
             `<option value="${p.num}" ${p.num === item.num_produto ? "selected" : ""}>
@@ -700,7 +894,7 @@ function renderizarItens() {
     tbody.querySelectorAll("button").forEach(btn => {
         btn.addEventListener("click", () => {
             itensPedido.splice(btn.dataset.r, 1);
-            renderizarItens();
+            renderItensNovoPedido();
         });
     });
 
@@ -711,8 +905,8 @@ function renderizarItens() {
 
             if (produto) {
             itensPedido[index].num_produto = produto.num;
-            itensPedido[index].valor_unitario = Number(produto.valor);
-            renderizarItens();
+            itensPedido[index].valor_unitario = Number(produto.valor_venda);
+            renderItensNovoPedido();
             }
         });
     });
@@ -721,39 +915,75 @@ function renderizarItens() {
 
 async function salvarPedido() {
 
-    if (!document.getElementById("pedido-cliente-nome").value) {
-        alert("Informe o nome do cliente!");
+    if (!document.getElementById("pedido-cliente").value) {
+        mostrarErro("Informe o nome do cliente!");
         return;
     }
 
     if (itensPedido.length === 0) {
-        alert("Adicione pelo menos um item!");
+        mostrarErro("Adicione pelo menos um item!");
         return;
     }
 
     for (const item of itensPedido) {
         if (!item.num_produto || item.quantidade <= 0 || item.valor_unitario <= 0) {
-            alert("Preencha todos os itens corretamente!");
+            mostrarErro("Preencha todos os itens corretamente!");
             return;
         }
     }
 
+    if (!document.getElementById("pedido-forma_pagamento").value) {
+        mostrarErro("Informe a forma de pagamento!");
+        return;
+    }
+
     const data = {
-        cliente_nome: document.getElementById("pedido-cliente-nome").value,
+        num_cliente: document.getElementById("pedido-cliente").value,
         itens: itensPedido.map(i => ({
             num_produto: i.num_produto,
             quantidade: i.quantidade,
             valor_unitario: i.valor_unitario
-        }))
+        })),
+        forma_pagamento: document.getElementById("pedido-forma_pagamento").value,
+        pago: document.getElementById("pedido-pago").checked,
     };
 
-    await api(`${API_BASE}/pedidos/pedidos`, "POST", data);
+    try{
+        await api(`${API_BASE}/pedidos/pedidos`, "POST", data);
 
-    renderizarItens();
-    cachePedidos = null;
-    limparFormularioPedido();
-    carregarPedidos(true);
+        cachePedidos = null;
+
+        renderItensNovoPedido();
+        limparFormularioPedido();
+        carregarPedidos(true);
+    } catch (error){
+        mostrarErro(error || "Nao foi possivel salvar pedido!")
+    }
 };
+
+function atualizarListaClientesAutocomplete() {
+    const select = document.getElementById("pedido-cliente");
+    select.innerHTML = `<option value="">Selecione</option>`;
+
+    cacheClientes.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.num;
+        opt.textContent = c.nome;
+        select.appendChild(opt);
+    });
+}
+
+function atualizarFormaPagamentoAutocomplete() {
+    const select = document.getElementById("pedido-forma_pagamento");
+    select.innerHTML = `<option value="">Selecione</option>`;
+
+    cacheFormasPagamento.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        select.appendChild(opt);
+    });
+}
 
 /* ================= CALCULOS DO PEDIDO FORM ================= */
 
@@ -801,6 +1031,15 @@ function atualizarSubtotalEdicao(tr) {
 
 function abrirFormulario(tipo) {
     document.getElementById(`form-${tipo}`).classList.remove("hidden");
+
+    if (tipo === "pedido") {
+        if (!cacheClientes) {
+            carregarClientes(true).then(atualizarListaClientesAutocomplete);
+        } else {
+            atualizarListaClientesAutocomplete();
+        }
+        atualizarFormaPagamentoAutocomplete();
+    }
 }
 
 function fecharFormulario(tipo) {
@@ -815,7 +1054,7 @@ function fecharFormulario(tipo) {
 }
 
 function limparFormularioPedido() {
-    document.getElementById("pedido-cliente-nome").value = "";
+    document.getElementById("pedido-cliente").value = "";
 
     itensPedido = [];
 
@@ -825,15 +1064,15 @@ function limparFormularioPedido() {
 
 function limparFormularioCliente() {
     document.getElementById("cliente-nome").value = "";
-    document.getElementById("cliente-idade").value = "";
     document.getElementById("cliente-telefone").value = "";
-    document.getElementById("cliente-email").value = "";
+    document.getElementById("cliente-endereco").value = "";
 }
 
 function limparFormularioProduto() {
     document.getElementById("produto-nome").value = "";
     document.getElementById("produto-descricao").value = "";
-    document.getElementById("produto-valor").value = "";
+    document.getElementById("produto-valor_compra").value = "";
+    document.getElementById("produto-valor_venda").value = "";
     document.getElementById("produto-categoria").value = "";
 }
 
@@ -847,8 +1086,9 @@ async function carregarUsuarioLogado() {
         document.getElementById("user-btn").textContent =
             `${usuario.email} ▾`;
 
-    } catch (err) {
-        console.error("Erro ao carregar usuário", err);
+    } catch (error) {
+        console.error("Erro ao carregar usuário", error);
+        handleApiError(error);
     }
 }
 
@@ -857,4 +1097,29 @@ async function carregarUsuarioLogado() {
 function atualizarIcone(tr, aberto) {
     const icone = tr.querySelector(".icone-toggle");
     icone.textContent = aberto ? "🔼" : "🔽";
+}
+
+function handleApiError(error) {
+    if (error.status === 401) {
+        mostrarErro("Sessão expirada. Faça login novamente.");
+        localStorage.clear();
+
+        setTimeout(() => {
+            logout();
+        }, 1500);
+
+        return;
+    }
+
+    mostrarErro(error.message || "Erro inesperado");
+}
+
+function mostrarErro(mensagem) {
+    const toast = document.getElementById("toast");
+    toast.textContent = mensagem;
+    toast.classList.remove("hidden");
+
+    setTimeout(() => {
+        toast.classList.add("hidden");
+    }, 4000);
 }

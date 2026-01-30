@@ -1,18 +1,20 @@
 from sqlalchemy.orm import Session
-from src.models import Pedido, ItemPedido, Produto
+from src.models import Pedido, ItemPedido, Produto, Cliente
 from typing import List
 
 class PedidoRepository:
 
-    def criar_pedido(self, db: Session, cliente_nome: str, itens: List[ItemPedido]):
+    def criar_pedido(self, db: Session, num_cliente: int, itens: List[ItemPedido], forma_pagamento: str, pago: bool):
         valor = 0
         for item in itens:
             valor += item.quantidade * item.valor_unitario
 
         pedido = Pedido(
-            cliente_nome = cliente_nome,
-            valor = valor
-            )
+            num_cliente = num_cliente,
+            valor = valor,
+            forma_pagamento = forma_pagamento,
+            pago = pago
+        )
         
         db.add(pedido)
         db.commit()
@@ -29,8 +31,47 @@ class PedidoRepository:
         db.commit()
         db.refresh(item_db)
 
-        return pedido
+        pedido_retorno= {
+            "num": pedido.num,
+            "num_cliente": pedido.num_cliente,
+            "nome_cliente": pedido.cliente.nome,
+            "valor": pedido.valor,
+            "forma_pagamento": pedido.forma_pagamento,
+            "pago": pedido.pago,
+            "data": pedido.data
+        }
+        return pedido_retorno
     
+    def atualizar_pedido(self, db: Session, num_pedido: int, num_cliente: int, forma_pagamento: str, pago: bool):
+
+        pedido = db.query(Pedido).filter(Pedido.num == num_pedido).first()
+
+        if not pedido:
+            return None
+
+        if num_cliente is not None:
+            pedido.num_cliente = num_cliente
+
+        if forma_pagamento is not None:
+            pedido.forma_pagamento = forma_pagamento
+
+        if pago is not None:
+            pedido.pago = pago
+
+        db.commit()
+        db.refresh(pedido)
+
+        pedido_retorno= {
+            "num": pedido.num,
+            "num_cliente": pedido.num_cliente,
+            "nome_cliente": pedido.cliente.nome,
+            "valor": pedido.valor,
+            "forma_pagamento": pedido.forma_pagamento,
+            "pago": pedido.pago,
+            "data": pedido.data
+        }
+        return pedido_retorno
+
     def atualizar_item_pedido(self, db: Session, num_pedido: int, num_item: int, num_produto: int, valor_unitario: float, quantidade: int):
 
         item_pedido = db.query(ItemPedido).filter(ItemPedido.num_pedido == num_pedido, ItemPedido.num == num_item).first()
@@ -54,7 +95,17 @@ class PedidoRepository:
 
         db.commit()
         db.refresh(pedido)
-        return pedido
+
+        pedido_retorno= {
+            "num": pedido.num,
+            "num_cliente": pedido.num_cliente,
+            "nome_cliente": pedido.cliente.nome,
+            "valor": pedido.valor,
+            "forma_pagamento": pedido.forma_pagamento,
+            "pago": pedido.pago,
+            "data": pedido.data
+        }
+        return pedido_retorno
 
     def excluir_item_pedido(self, db: Session, num_pedido: int, num_item: int):
         item_pedido = db.query(ItemPedido).filter(ItemPedido.num_pedido == num_pedido, ItemPedido.num == num_item).first()
@@ -87,12 +138,11 @@ class PedidoRepository:
         itens = db.query(ItemPedido).filter(ItemPedido.num_pedido == num_pedido).all()
         itens_retorno = []
         for item in itens:
-            nome = db.query(Produto).filter(Produto.num == item.num_produto).first()
             item_retorno= {
                 "num": item.num,
                 "num_pedido": item.num_pedido,
                 "num_produto": item.num_produto,
-                "nome_produto": nome.nome,
+                "nome_produto": item.produto.nome,
                 "quantidade": item.quantidade,
                 "valor_unitario": item.valor_unitario
             }
@@ -100,5 +150,18 @@ class PedidoRepository:
         return itens_retorno
     
     def selecionar_pedidos(self, db: Session):
-        return db.query(Pedido).all()
+        pedidos = db.query(Pedido).all()
+        pedidos_retorno = []
+        for pedido in pedidos:
+            pedido_retorno= {
+                "num": pedido.num,
+                "num_cliente": pedido.num_cliente,
+                "nome_cliente": pedido.cliente.nome,
+                "valor": pedido.valor,
+                "forma_pagamento": pedido.forma_pagamento,
+                "pago": pedido.pago,
+                "data": pedido.data
+            }
+            pedidos_retorno.append(pedido_retorno)
+        return pedidos_retorno
     

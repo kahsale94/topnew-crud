@@ -17,11 +17,13 @@ def selecionar_cliente(num: int, db: db_dependecy):
 
 @router.post("/clientes", response_model=ClienteResponse)
 def criar_cliente(cliente: ClienteCreate, db: db_dependecy):
-    return repo.criar_cliente(db, cliente.nome, cliente.idade, cliente.telefone, cliente.email)
+    return repo.criar_cliente(db, cliente.nome, cliente.telefone, cliente.endereco)
 
-@router.put("/clientes/{num}", response_model= ClienteResponse)
+@router.put("/clientes/{num}", response_model=ClienteResponse)
 def atualizar_cliente(num: int, cliente: ClienteUpdate, db: db_dependecy):
-    atualizado = repo.atualizar_cliente(db, num, cliente.nome, cliente.idade, cliente.telefone, cliente.email)
+    atualizado = repo.atualizar_cliente(db, num, cliente.nome, cliente.telefone, cliente.endereco)
+    if atualizado is False:
+        raise HTTPException(status_code=404, detail="Cliente ja cadastrado!")
     if not atualizado:
         raise HTTPException(status_code=404, detail="Cliente não encontrado")
     return atualizado

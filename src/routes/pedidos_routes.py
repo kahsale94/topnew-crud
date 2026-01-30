@@ -17,7 +17,14 @@ def selecionar_itens_pedido(num: int, db: db_dependecy):
 
 @router.post("/pedidos", response_model=PedidoResponse)
 def criar_pedido(pedido: PedidoCreate, db: db_dependecy):
-    return repo.criar_pedido(db, pedido.cliente_nome, pedido.itens)
+    return repo.criar_pedido(db, pedido.num_cliente, pedido.itens, pedido.forma_pagamento, pedido.pago)
+
+@router.put("/pedidos/{num_pedido}", response_model= PedidoResponse)
+def atualizar_pedido(num_pedido: int, pedido: PedidoUpdate, db: db_dependecy):
+    atualizado = repo.atualizar_pedido(db, num_pedido, pedido.num_cliente, pedido.forma_pagamento, pedido.pago)
+    if not atualizado:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+    return atualizado
 
 @router.put("/pedidos/{num_pedido}/{num_item}", response_model= PedidoResponse)
 def atualizar_item_pedido(num_pedido: int, num_item: int, pedido: PedidoUpdate, db: db_dependecy):

@@ -19,7 +19,7 @@ class ItemPedidoCreate(BaseModel):
     valor_unitario: float
 
 class ItemPedidoUpdate(BaseModel):
-    num_produto: str | None = None
+    num_produto: int
     quantidade: int | None = None
     valor_unitario: float | None = None
 
@@ -35,16 +35,24 @@ class ItemPedidoResponse(BaseModel):
         from_attributes = True
 
 class PedidoCreate(BaseModel):
-    cliente_nome: str
+    num_cliente: int
     itens: List[ItemPedidoCreate]
+    forma_pagamento: str
+    pago: bool
 
 class PedidoUpdate(BaseModel):
     item: ItemPedidoUpdate | None = None
+    num_cliente: int | None = None
+    forma_pagamento: str | None = None
+    pago: bool | None = None
 
 class PedidoResponse(BaseModel):
     num: int
+    num_cliente: int
+    nome_cliente: str
     valor: float
-    cliente_nome: str
+    forma_pagamento: str
+    pago: bool
     data: datetime
 
     class ConfigDict:
@@ -52,22 +60,19 @@ class PedidoResponse(BaseModel):
 
 class ClienteCreate(BaseModel):
     nome: str
-    idade: int | None = None
     telefone: str
-    email: str | None = None
+    endereco: str
 
 class ClienteUpdate(BaseModel):
     nome: str | None = None
-    idade: int | None = None
     telefone: str | None = None
-    email: str | None = None
+    endereco: str | None = None
 
 class ClienteResponse(BaseModel):
     num: int
     nome: str
-    idade: int | None = None
     telefone: str
-    email: str | None = None
+    endereco: str
 
     class ConfigDict:
         from_attributes = True
@@ -75,20 +80,23 @@ class ClienteResponse(BaseModel):
 class ProdutoCreate(BaseModel):
     nome: str
     descricao: str | None = None
-    valor: float
+    valor_compra: float
+    valor_venda: float
     categoria: str | None = None
 
 class ProdutoUpdate(BaseModel):
     nome: str | None = None
     descricao: str | None = None
-    valor: float | None = None
+    valor_compra: float | None = None
+    valor_venda: float | None = None
     categoria: str | None = None
 
 class ProdutoResponse(BaseModel):
     num: int
     nome: str
     descricao: str | None = None
-    valor: float
+    valor_compra: float
+    valor_venda: float
     categoria: str | None = None
 
     class ConfigDict:
