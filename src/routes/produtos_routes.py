@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from src.database import db_dependecy
-from src.schemas import ProdutoCreate, ProdutoResponse, ProdutoUpdate
+from src.schemas.produto_schema import ProdutoCreate, ProdutoResponse, ProdutoUpdate
 from src.repositories.produtos_repo import ProdutoRepository
 from src.security.security import Security
 

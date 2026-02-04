@@ -1,6 +1,6 @@
 from src.security.security import Security
 from sqlalchemy.orm import Session
-from src.models import Usuario
+from src.models.usuario_model import Usuario
 
 class UsuarioRepository:
 

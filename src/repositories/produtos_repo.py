@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
-from src.models import Produto
+from src.models.produto_model import Produto
+from src.models.estoque_model import Estoque
 
 class ProdutoRepository:
 
@@ -15,6 +16,14 @@ class ProdutoRepository:
         db.add(produto)
         db.commit()
         db.refresh(produto)
+        db.flush()
+
+        estoque = Estoque(num_produto=produto.num)
+        db.add(estoque)
+
+        db.commit()
+        db.refresh(estoque)
+
         return produto
     
     def atualizar_produto(self, db: Session, num: int, nome: str, descricao: str, valor_compra: float, valor_venda: float, categoria: str):
@@ -23,7 +32,7 @@ class ProdutoRepository:
             return None
         
         if nome is not None:
-            nomes_produtos = db.query(Produto).all()
+            nomes_produtos = db.query(Produto).filter(Produto.num != num).all()
             for n in nomes_produtos:
                 if nome == n.nome:
                     return False

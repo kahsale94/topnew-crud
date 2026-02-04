@@ -1,3 +1,5 @@
+import { API_BASE } from "./config.js";
+
 async function login(email, senha) {
     const form = new URLSearchParams();
     form.append("username", email);
@@ -26,3 +28,8 @@ function logout() {
     localStorage.removeItem("refresh_token");
     window.location.href = "/login";
 }
+
+export {
+    login,
+    logout
+};

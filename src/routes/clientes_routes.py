@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from src.database import db_dependecy
-from src.schemas import ClienteCreate, ClienteResponse, ClienteUpdate
+from src.schemas.cliente_schema import ClienteCreate, ClienteResponse, ClienteUpdate
 from src.repositories.clientes_repo import ClienteRepository
 from src.security.security import Security
 

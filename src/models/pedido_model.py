@@ -2,13 +2,6 @@ from sqlalchemy import Column, Integer, DECIMAL, Text, TIMESTAMP, func, ForeignK
 from sqlalchemy.orm import relationship
 from src.database import Base
 
-class Usuario(Base):
-    __tablename__ = "usuarios"
-
-    id = Column(Integer, primary_key=True)
-    email = Column(Text, nullable=False, unique=True)
-    senha_hash = Column(Text, nullable=False)
-
 class Pedido(Base):
     __tablename__ = "pedidos"
 
@@ -33,25 +26,3 @@ class ItemPedido(Base):
 
     produto = relationship("Produto", back_populates="pedidos")
     pedidos = relationship("Pedido", back_populates="item_pedido")
-
-class Cliente(Base):
-    __tablename__ = "clientes"
-
-    num = Column(Integer, primary_key=True)
-    nome = Column(Text, nullable=False, unique=True)
-    telefone = Column(Text, nullable=False, unique=True)
-    endereco = Column(Text, nullable=False, unique=True)
-
-    pedidos = relationship("Pedido", back_populates="cliente", cascade="all, delete")
-
-class Produto(Base):
-    __tablename__ = "produtos"
-
-    num = Column(Integer, primary_key=True)
-    nome = Column(Text, nullable=False, unique=True)
-    descricao = Column(Text)
-    valor_compra = Column(DECIMAL, nullable=False)
-    valor_venda = Column(DECIMAL, nullable=False)
-    categoria = Column(Text)
-
-    pedidos = relationship("ItemPedido", back_populates="produto")

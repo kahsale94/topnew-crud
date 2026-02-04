@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from src.routes import pedidos_routes, clientes_routes, produtos_routes, usuarios_routes
+from src.routes import pedidos_routes, clientes_routes, produtos_routes, usuarios_routes, estoque_routes
 from src.security import auth_routes
 
 app = FastAPI(title="API de Pedidos")
@@ -23,6 +23,7 @@ app.include_router(clientes_routes.router)
 app.include_router(produtos_routes.router)
 app.include_router(usuarios_routes.router)
 app.include_router(auth_routes.router)
+app.include_router(estoque_routes.router)
 
 @app.get("/")
 def home(request: Request):

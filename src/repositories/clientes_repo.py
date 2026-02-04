@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.models import Cliente
+from src.models.cliente_model import Cliente
 
 class ClienteRepository:
 
@@ -21,7 +21,7 @@ class ClienteRepository:
             return None
 
         if nome is not None:
-            nomes_clientes = db.query(Cliente).all()
+            nomes_clientes = db.query(Cliente).filter(Cliente.num != num).all()
             for n in nomes_clientes:
                 if nome == n.nome:
                     return False

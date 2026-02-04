@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from src.database import db_dependecy
-from src.schemas import PedidoCreate, PedidoResponse, PedidoUpdate, ItemPedidoResponse
+from src.schemas.pedido_schema import PedidoCreate, PedidoResponse, PedidoUpdate, ItemPedidoResponse
 from src.repositories.pedidos_repo import PedidoRepository
 from src.security.security import Security
 

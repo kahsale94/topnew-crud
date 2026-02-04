@@ -1,44 +1,32 @@
-const API_BASE = window.APP_CONFIG.API_BASE;
+import { API_BASE } from "../core/config.js";
 
 async function api(url, method = "GET", body = null, retry = true) {
     const token = localStorage.getItem("access_token");
-    
+
     const headers = {
         "Content-Type": "application/json"
     };
-    
+
     if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
+        headers.Authorization = `Bearer ${token}`;
     }
-    
-    const options = {
-        method,
-        headers
-    };
-    
+
+    const options = { method, headers };
+
     if (body) {
         options.body = JSON.stringify(body);
     }
-    
+
     const response = await fetch(url, options);
-    
+
     if (response.status === 401 && retry) {
         const refreshed = await refreshToken();
 
         if (!refreshed) {
-            localStorage.clear();
-            throw {
-                status: 401,
-                message: "Sessão expirada"
-            };
+            throw { status: 401, message: "Sessão expirada" };
         }
 
         return api(url, method, body, false);
-    }    
-
-    if (response.status === 401) {
-        logout();
-        throw new Error("Não autorizado");
     }
 
     if (!response.ok) {
@@ -47,16 +35,11 @@ async function api(url, method = "GET", body = null, retry = true) {
         try {
             const errorData = await response.json();
             message = errorData.detail || message;
-        } catch {
-            // resposta não JSON
-        }
+        } catch {}
 
-        throw {
-            status: response.status,
-            message
-        };
+        throw { status: response.status, message };
     }
-    
+
     return response.json();
 }
 
@@ -75,3 +58,5 @@ async function refreshToken() {
     localStorage.setItem("access_token", data.access_token);
     return true;
 }
+
+export { api };

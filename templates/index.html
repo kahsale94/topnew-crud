@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="../static/responsive.css">
 </head>
 
 <body>
@@ -37,6 +38,7 @@
         <button class="tab active" data-tab="pedidos">Pedidos</button>
         <button class="tab" data-tab="clientes">Clientes</button>
         <button class="tab" data-tab="produtos">Produtos</button>
+        <button class="tab" data-tab="estoque">Estoque</button>
     </nav>
 
     <!-- ================= CONTEÚDO ================= -->
@@ -48,7 +50,9 @@
         <section id="pedidos" class="page active">
 
             <div class="page-actions">
-                <button class="btn primary" onclick="abrirFormulario('pedido')">+ Novo Pedido</button>
+                <button title="Novo Pedido" id="btn-novo-pedido" data-action="novo-pedido" class="btn primary">
+                    + Novo Pedido
+                </button>
             </div>
 
             <!-- ================= NOVO PEDIDO ================= -->
@@ -93,15 +97,15 @@
                     <strong id="pedido-total">R$ 0,00</strong>
                 </div>
 
-                <button onclick="fecharFormulario('pedido')" type="button" class="btn cancel">
+                <button title="Cancelar Pedido" id="btn-cancelar-pedido" data-action="cancelar-pedido" class="btn cancel">
                     Cancelar Pedido
                 </button>
 
-                <button id="btn-add-item" type="button" class="btn secondary">
+                <button id="btn-add-item" data-action="adicionar-item" class="btn secondary">
                     + Adicionar Produto
                 </button>
 
-                <button id="btn-salvar-pedido" type="button" class="btn primary">
+                <button title="Salvar Pedido" id="btn-salvar-pedido" data-action="salvar-pedido" class="btn primary">
                     Salvar Pedido
                 </button>
             </div>
@@ -109,14 +113,14 @@
             <div class="page-header">
                 <H1>Pedidos</H1>
 
-                <button class="btn secondary icon-btn" onclick="carregarPedidos(true)" title="Recarregar Pedidos">
+                <button title="Recarregar Pedidos" id="btn-recarregar-pedidos" data-action="recarregar-pedidos" class="btn secondary icon-btn">
                     <img src="../static/icons/recarregar.png" alt="Recarregar">
                 </button>
             </div>
 
-            <!-- ================= TABELA ================= -->
+            <!-- ================= LISTA DESKTOP ================= -->
 
-            <div class="table-container">
+            <div class="table-container desktop-only">
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -137,6 +141,12 @@
                 </table>
             </div>
 
+            <!-- ================= LISTA MOBILE ================= -->
+
+            <div class="mobile-only list-pedidos" id="pedidos-mobile">
+                <!-- JS vai preencher -->
+            </div>
+
         </section>
 
         <!-- ================= CLIENTES ================= -->
@@ -144,7 +154,9 @@
         <section id="clientes" class="page">
 
             <div class="page-actions">
-                <button class="btn primary" onclick="abrirFormulario('cliente')">+ Novo Cliente</button>
+                <button title="Novo Cliente" id="btn-novo-cliente" data-action="novo-cliente" class="btn primary">
+                    + Novo Cliente
+                </button>
             </div>
 
             <!-- ================= NOVO CLIENTE ================= -->
@@ -167,11 +179,11 @@
                     <input id="cliente-endereco" type="endereco">
                 </div>
 
-                <button onclick="fecharFormulario('cliente')" type="button" class="btn cancel">
+                <button title="Cancelar Cliente" id="btn-cancelar-cliente" data-action="cancelar-cliente" class="btn cancel">
                     Cancelar
                 </button>
 
-                <button id="btn-salvar-cliente" class="btn primary">
+                <button title="Salvar Cliente" id="btn-salvar-cliente" data-action="salvar-cliente" class="btn primary">
                     Salvar Cliente
                 </button>
             </div>
@@ -179,7 +191,7 @@
             <div class="page-header">
                 <H1>Clientes</H1>
 
-                <button class="btn secondary icon-btn" onclick="carregarClientes(true)" title="Recarregar Clientes">
+                <button title="Recarregar Clientes" id="btn-recarregar-clientes" data-action="recarregar-clientes" class="btn secondary icon-btn">
                     <img src="../static/icons/recarregar.png" alt="Recarregar">
                 </button>
             </div>
@@ -208,7 +220,9 @@
         <section id="produtos" class="page">
 
             <div class="page-actions">
-                <button class="btn primary" onclick="abrirFormulario('produto')">+ Novo Produto</button>
+                <button title="Novo Produto" id="btn-novo-produto" data-action="novo-produto" class="btn primary">
+                    + Novo Produto
+                </button>
             </div>
 
             <!-- ================= NOVO PRODUTO ================= -->
@@ -241,11 +255,11 @@
                     <input id="produto-categoria" type="text">
                 </div>
 
-                <button onclick="fecharFormulario('produto')" type="button" class="btn cancel">
+                <button title="Cancelar Produto" id="btn-cancelar-produto" data-action="cancelar-produto" class="btn cancel">
                     Cancelar
                 </button>
 
-                <button id="btn-salvar-produto" class="btn primary">
+                <button title="Salvar Produto" id="btn-salvar-produto" data-action="salvar-produto" class="btn primary">
                     Salvar Produto
                 </button>
             </div>
@@ -253,7 +267,7 @@
             <div class="page-header">
                 <H1>Produtos</H1>
 
-                <button class="btn secondary icon-btn" onclick="carregarProdutos(true)" title="Recarregar Produtos">
+                <button title="Recarregar Produtos" id="btn-recarregar-produtos" data-action="recarregar-produtos" class="btn secondary icon-btn">
                     <img src="../static/icons/recarregar.png" alt="Recarregar">
                 </button>
             </div>
@@ -275,21 +289,47 @@
                     <tbody id="produtos-tbody">
                         <!-- GET /produtos -->
                     </tbody>
+                </table>
             </div>
 
         </section>
 
+        <!-- ================= ESTOQUE ================= -->
+
+        <section id="estoque" class="page">
+
+            <div class="page-header">
+                <h1>Estoque</h1>
+
+                <button title="Recarregar Estoque" id="btn-recarregar-estoque" data-action="recarregar-estoque" class="btn secondary icon-btn">
+                    <img src="../static/icons/recarregar.png" alt="Recarregar">
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Estoque Atual</th>
+                            <th>Estoque Mínimo</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="estoque-tbody">
+                        <!-- GET /estoque -->
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+
     </main>
 
-    <script src="../static/config.js"></script>
-    <script src="../static/api.js"></script>
-    <script src="../static/auth.js"></script>
-    <script src="../static/guard.js"></script>
-    <script>
-        verificarAuth();
-    </script>
-    <script src="../static/app.js"></script>
-
+    <script type="module" src="../static/main.js"></script>
     
 </body>
 

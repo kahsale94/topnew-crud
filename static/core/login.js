@@ -1,3 +1,6 @@
+import { login } from "../core/auth.js";
+import { mostrarErro } from "../core/feedback.js";
+
 if (localStorage.getItem("access_token")) {
     window.location.href = "/";
 }
@@ -5,14 +8,13 @@ if (localStorage.getItem("access_token")) {
 async function handleLogin() {
     const email = document.getElementById("email").value;
     const senha = document.getElementById("senha").value;
-    const erro = document.getElementById("erro");
-
-    erro.textContent = "";
 
     try {
         await login(email, senha);
         window.location.href = "/";
     } catch (e) {
-        erro.textContent = "Email ou senha inválidos";
+        mostrarErro("Email ou senha inválidos");
     }
 }
+
+window.handleLogin = handleLogin;

@@ -8,3 +8,5 @@ function verificarAuth() {
 
     return true;
 }
+
+export { verificarAuth };

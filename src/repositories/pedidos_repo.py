@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.models import Pedido, ItemPedido, Produto, Cliente
+from src.models.pedido_model import Pedido, ItemPedido
 from typing import List
 
 class PedidoRepository:

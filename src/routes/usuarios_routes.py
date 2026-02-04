@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from src.security.security import Security
 from src.database import db_dependecy
-from src.schemas import UsuarioCreate, UsuarioResponse
+from src.schemas.usuario_schema import UsuarioCreate, UsuarioResponse
 from src.repositories.usuarios_repo import UsuarioRepository
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])

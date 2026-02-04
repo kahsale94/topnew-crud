@@ -1,0 +1,168 @@
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+
+    /* ================= GERAL ================= */
+
+    body {
+        overflow: auto;
+    }
+
+    .container {
+        margin: 0;
+        padding: 12px;
+        border: none;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .topbar h1 {
+        font-size: 18px;
+    }
+
+    .tabs {
+        flex-direction: column;
+        padding: 0;
+        margin: 0;
+    }
+
+    .tab {
+        width: 100%;
+        border-radius: 0;
+        margin: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    .form-container {
+        width: 100%;
+        margin: 12px 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .select {
+        width: 100%;
+    }
+
+    input, select, button {
+        font-size: 16px;
+    }
+
+    .btn {
+        width: 100%;
+        margin-top: 8px;
+        padding: 14px;
+    }
+
+    .icon-btn {
+        width: auto;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        min-width: 700px;
+    }
+
+    .desktop-only {
+        display: none;
+    }
+
+    .mobile-only {
+        display: block;
+    }
+
+    /* ================= ABA PEDIDOS ================= */
+
+        /* Pedidos - esconder colunas menos importantes
+    #pedidos .data-table th:nth-child(3),
+    #pedidos .data-table td:nth-child(3),
+    #pedidos .data-table th:nth-child(5),
+    #pedidos .data-table td:nth-child(5),
+    #pedidos .data-table th:nth-child(7), 
+    #pedidos .data-table td:nth-child(7) {
+        display: none;
+    } */
+
+
+    .mobile-only.list-pedidos {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 5px;
+    }
+
+    .pedido-card {
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .pedido-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .pedido-cliente {
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .pedido-valor {
+        font-weight: 600;
+        color: #1a73e8;
+    }
+
+    .pedido-info {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 6px;
+    }
+
+    .pedido-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .pedido-actions button {
+        flex: 1;
+    }
+
+    #form-pedido {
+        width: 100% !important;
+        margin: 0;
+        padding: 12px;
+    }
+
+    #form-pedido h2 {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .pedido-total {
+        text-align: left !important;
+        margin-right: 0 !important;
+        font-size: 16px;
+    }
+
+    #form-pedido .btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+/* ================= TABLET ================= */
+@media (max-width: 1024px) {
+
+}
