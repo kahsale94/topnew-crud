@@ -4,6 +4,11 @@ from src.models.cliente_model import Cliente
 class ClienteRepository:
 
     def criar_cliente(self, db: Session, nome: str, telefone: int, endereco: str):
+
+        existente = db.query(Cliente).filter(Cliente.nome == nome).first()
+        if existente:
+            return None
+
         cliente = Cliente(
             nome = nome,
             telefone = telefone,
@@ -13,19 +18,21 @@ class ClienteRepository:
         db.add(cliente)
         db.commit()
         db.refresh(cliente)
+
         return cliente
 
     def atualizar_cliente(self, db: Session, num: int, nome: str, telefone: int, endereco: str):
+
         cliente = db.query(Cliente).filter(Cliente.num == num).first()
         if not cliente:
             return None
 
         if nome is not None:
-            nomes_clientes = db.query(Cliente).filter(Cliente.num != num).all()
-            for n in nomes_clientes:
-                if nome == n.nome:
-                    return False
+            existente = db.query(Cliente).filter(Cliente.nome == nome, Cliente.num != num).first()
+            if existente:
+                return "duplicado"
             cliente.nome = nome
+
         if telefone is not None:
             cliente.telefone = telefone
         if endereco is not None:
@@ -33,15 +40,18 @@ class ClienteRepository:
 
         db.commit()
         db.refresh(cliente)
+
         return cliente
 
     def excluir_cliente(self, db: Session, num: int):
+
         cliente = db.query(Cliente).filter(Cliente.num == num).first()
         if not cliente:
-            return False
+            return None
         
         db.delete(cliente)
         db.commit()
+
         return True
 
     def selecionar_cliente(self, db: Session, num: int):

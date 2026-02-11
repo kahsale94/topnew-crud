@@ -15,21 +15,25 @@ def selecionar_todos(db: db_dependecy):
 def selecionar_cliente(num: int, db: db_dependecy):
     return repo.selecionar_cliente(db, num)
 
-@router.post("/clientes", response_model=ClienteResponse)
+@router.post("/clientes", status_code=201, response_model=ClienteResponse)
 def criar_cliente(cliente: ClienteCreate, db: db_dependecy):
-    return repo.criar_cliente(db, cliente.nome, cliente.telefone, cliente.endereco)
+    novo_cliente = repo.criar_cliente(db, cliente.nome, cliente.telefone, cliente.endereco)
+    if not novo_cliente:
+        raise HTTPException(status_code=409, detail="Cliente já cadastrado!")
+    return novo_cliente
 
 @router.put("/clientes/{num}", response_model=ClienteResponse)
 def atualizar_cliente(num: int, cliente: ClienteUpdate, db: db_dependecy):
     atualizado = repo.atualizar_cliente(db, num, cliente.nome, cliente.telefone, cliente.endereco)
-    if atualizado is False:
-        raise HTTPException(status_code=404, detail="Cliente ja cadastrado!")
     if not atualizado:
-        raise HTTPException(status_code=404, detail="Cliente não encontrado")
+        raise HTTPException(status_code=404, detail="Cliente não encontrado!")
+    if atualizado == "duplicado":
+        raise HTTPException(status_code=409, detail="Cliente já cadastrado!")
     return atualizado
 
-@router.delete("/clientes/{num}")
+@router.delete("/clientes/{num}", status_code=204)
 def excluir_cliente(num: int, db: db_dependecy):
-    if not repo.excluir_cliente(db, num):
+    deletado = repo.excluir_cliente(db, num)
+    if not deletado:
         raise HTTPException(status_code=404, detail="Cliente não encontrado")
-    return {"message": "Cliente removido"}
+    return

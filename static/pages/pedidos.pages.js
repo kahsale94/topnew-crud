@@ -1,5 +1,5 @@
 import { api } from "../core/api.js";
-import { API_BASE } from "../core/config.js";
+import { API_BASE, API_N8N } from "../core/config.js";
 import { state } from "../core/state.js";
 import { atualizarIcone } from "../core/ui.js";
 import { carregarClientes } from "./clientes.pages.js";
@@ -29,80 +29,43 @@ async function carregarPedidos(force = false) {
 
 function renderPedidos(pedidos) {
 
-    // PEDIDOS DESKTOP //
-
     const tbody = document.getElementById("pedidos-tbody");
-    if (!tbody) return;
-    tbody.innerHTML = "";
 
-    if (!state.pedidos.ui.pedidoEditando) {
-        state.pedidos.ui.pedidoAberto = null;
-        state.pedidos.ui.detalhesAbertos = null;
-    }
+    if (tbody) {
+        tbody.innerHTML = "";
 
-    pedidos.forEach(pedido => {
-        const trPedido = document.createElement("tr");
-        trPedido.dataset.id = pedido.num;
-        trPedido.classList.add("pedido-row");
-        trPedido.style.cursor = "pointer";
-
-        if (state.pedidos.ui.pedidoEditando && state.pedidos.ui.pedidoEditando == pedido.num) {
-            trPedido.setAttribute("data-editando", "true");
-            trPedido.innerHTML = renderEdicaoPedidos(pedido);
-        } else {
-            trPedido.innerHTML = renderNormalPedidos(pedido);
+        if (!state.pedidos.ui.pedidoEditando) {
+            state.pedidos.ui.pedidoAberto = null;
+            state.pedidos.ui.detalhesAbertos = null;
         }
 
-        const trDetalhes = document.createElement("tr");
-        trDetalhes.classList.add("pedido-detalhes", "hidden");
+        pedidos.forEach(pedido => {
+            const trPedido = document.createElement("tr");
+            trPedido.dataset.id = pedido.num;
+            trPedido.classList.add("pedido-row");
+            trPedido.style.cursor = "pointer";
 
-        trDetalhes.innerHTML = `
-            <td colspan="5">
-                <div class="pedido-detalhes-container">
-                    Carregando itens...
-                </div>
-            </td>
-        `;
+            if (state.pedidos.ui.pedidoEditando && state.pedidos.ui.pedidoEditando == pedido.num) {
+                trPedido.setAttribute("data-editando", "true");
+                trPedido.innerHTML = renderEdicaoPedidos(pedido);
+            } else {
+                trPedido.innerHTML = renderNormalPedidos(pedido);
+            }
 
-        tbody.appendChild(trPedido);
-        tbody.appendChild(trDetalhes);
-    });
+            const trDetalhes = document.createElement("tr");
+            trDetalhes.classList.add("pedido-detalhes");
+            trDetalhes.style.display = "none";
 
-    // PEDIDOS MOBILE //
+            trDetalhes.innerHTML = `
+                <td colspan="5" class="pedido-detalhes">
+                    <div class="pedido-detalhes-container"></div>
+                </td>
+            `;
 
-    const mobileContainer = document.getElementById("pedidos-mobile");
-    if (mobileContainer) {
-        mobileContainer.innerHTML = "";
+            tbody.appendChild(trPedido);
+            tbody.appendChild(trDetalhes);
+        });
     }
-
-    pedidos.forEach(pedido => {
-        const card = document.createElement("div");
-        card.className = "pedido-card";
-
-        card.innerHTML = `
-            <div class="pedido-card-header">
-                <div class="pedido-cliente">${pedido.nome_cliente}</div>
-                <div class="pedido-valor">R$ ${pedido.valor}</div>
-            </div>
-
-            <div class="pedido-info">
-                Data: ${new Date(pedido.data).toLocaleDateString("pt-BR")}
-            </div>
-
-            <div class="pedido-info">
-                Status: ${pedido.pago ? "Pago" : "Pendente"}
-            </div>
-
-            <div class="pedido-actions">
-                <button class="btn secondary">Detalhes</button>
-                <button class="btn cancel">Excluir</button>
-            </div>
-        `;
-
-        if (mobileContainer) {
-            mobileContainer.appendChild(card);
-        }
-    });
 }
 
 async function toggleDetalhesPedido(trPedido, pedidoNum) {
@@ -111,17 +74,21 @@ async function toggleDetalhesPedido(trPedido, pedidoNum) {
     if (!trDetalhes || !trDetalhes.classList.contains("pedido-detalhes")) return;
 
     if (state.pedidos.ui.pedidoAberto === trPedido) {
-        trDetalhes.classList.toggle("hidden");
-        atualizarIcone(trPedido, !trDetalhes.classList.contains("hidden"));
+
+        trDetalhes.style.display = "none";
+        atualizarIcone(trPedido, false);
+
+        state.pedidos.ui.pedidoAberto = null;
+        state.pedidos.ui.detalhesAbertos = null;
         return;
     }
 
     if (state.pedidos.ui.detalhesAbertos) {
-        state.pedidos.ui.detalhesAbertos.classList.add("hidden");
+        state.pedidos.ui.detalhesAbertos.style.display = "none";
         atualizarIcone(state.pedidos.ui.pedidoAberto, false);
     }
 
-    trDetalhes.classList.remove("hidden");
+    trDetalhes.style.display = "table-row";
     atualizarIcone(trPedido, true);
 
     state.pedidos.ui.pedidoAberto = trPedido;
@@ -142,22 +109,21 @@ async function toggleDetalhesPedido(trPedido, pedidoNum) {
     }
 }
 
-
 function renderNormalPedidos(pedido) {
 
     return `
-        <td>${pedido.num}</td>
-        <td>${pedido.nome_cliente}</td>
-        <td>${new Date(pedido.data).toLocaleDateString("pt-BR")}</td>
-        <td>R$ ${Number(pedido.valor).toFixed(2)}</td>
-        <td>${pedido.forma_pagamento}</td>
-        <td>
+        <td data-label="Nº">${pedido.num}</td>
+        <td data-label="Cliente">${pedido.nome_cliente}</td>
+        <td data-label="Data">${new Date(pedido.data).toLocaleDateString("pt-BR")}</td>
+        <td data-label="Valor">R$ ${Number(pedido.valor).toFixed(2)}</td>
+        <td data-label="Forma">${pedido.forma_pagamento}</td>
+        <td data-label="Status">
             <span class="status ${pedido.pago ? "paid" : "pending"}">
                 ${pedido.pago ? "✅ Pago" : "⏳ Pendente"}
             </span>
         </td>
-        <td class="icone-toggle">🔽</td>
-        <td>
+        <td data-label="Ações">
+            <button title="Enviar Pedido" data-action="enviar">📬</button>
             <button title="Editar" data-action="editar">✏️</button>
             <button title="Excluir" data-action="excluir">🗑️</button>
         </td>
@@ -167,9 +133,9 @@ function renderNormalPedidos(pedido) {
 function renderEdicaoPedidos(pedido) {
 
     return `
-        <td>${pedido.num}</td>
+        <td data-label="Nº">${pedido.num}</td>
 
-        <td>
+        <td data-label="Cliente">
             <select data-f="num_cliente">
                 ${state.clientes.cache.map(c =>
                     `<option value="${c.num}" ${c.num === pedido.num_cliente ? "selected" : ""}>
@@ -179,11 +145,11 @@ function renderEdicaoPedidos(pedido) {
             </select>
         </td>
 
-        <td>${new Date(pedido.data).toLocaleDateString("pt-BR")}</td>
+        <td data-label="Data">${new Date(pedido.data).toLocaleDateString("pt-BR")}</td>
 
-        <td>R$ ${Number(pedido.valor).toFixed(2)}</td>
+        <td data-label="Valor">R$ ${Number(pedido.valor).toFixed(2)}</td>
 
-        <td>
+        <td data-label="Forma">
             <select data-f="forma_pagamento">
                 ${state.auxiliares.formasPagamento.map(f =>
                     `<option value="${f}" ${f === pedido.forma_pagamento ? "selected" : ""}>
@@ -193,13 +159,11 @@ function renderEdicaoPedidos(pedido) {
             </select>
         </td>
 
-        <td>
+        <td data-label="Status">
             <input type="checkbox" data-f="pago" ${pedido.pago ? "checked" : ""}>
         </td>
 
-        <td class="icone-toggle"></td>
-
-        <td>
+        <td data-label="Ações">
             <button title="Salvar" data-action="salvar">✅</button>
             <button title="Cancelar" data-action="cancelar">❌</button>
         </td>
@@ -284,13 +248,16 @@ function renderItensPedido(trDetalhes, itens, pedidoNum) {
     const container = trDetalhes.querySelector(".pedido-detalhes-container");
     if (!container) return;
 
+    container.innerHTML = "Carregando itens...";
+
     container.innerHTML = `
-        <table class="data-table" style="width: 85%">
+        <label>Itens do Pedido</label>
+        <table class="data-table pedido-itens-table">
             <thead>
                 <tr>
                     <th>Produto</th>
                     <th>Quantidade</th>
-                    <th>Valor Unitário</th>
+                    <th>Valor Unit</th>
                     <th>Total</th>
                     <th>Ações</th>
                 </tr>
@@ -312,11 +279,11 @@ function renderNormalItensPedido(item) {
 
     return `
         <tr>
-            <td>${state.produtos.cache.find(p => p.num === item.num_produto)?.nome ?? "Produto removido"}</td>
-            <td>${item.quantidade}</td>
-            <td>R$ ${Number(item.valor_unitario).toFixed(2)}</td>
-            <td>R$ ${(item.quantidade * item.valor_unitario).toFixed(2)}</td>
-            <td>
+            <td data-label="Nome">${state.produtos.cache.find(p => p.num === item.num_produto)?.nome ?? "Produto removido"}</td>
+            <td data-label="Quantidade">${item.quantidade}</td>
+            <td data-label="Valor Unit">R$ ${Number(item.valor_unitario).toFixed(2)}</td>
+            <td data-label="Valor Total">R$ ${(item.quantidade * item.valor_unitario).toFixed(2)}</td>
+            <td data-label="Ações">
                 <button title="Editar" data-action="editar-item" data-item="${item.num}">✏️</button>
                 <button title="Excluir" data-action="excluir-item" data-item="${item.num}">🗑️</button>
             </td>
@@ -328,7 +295,7 @@ function renderEdicaoItensPedido(item) {
 
     return `
         <tr data-editando="true">
-            <td>
+            <td data-label="Nome">
                 <select data-f="num_produto">
                     ${state.produtos.cache.map(p =>
                         `<option value="${p.num}" ${p.num === item.num_produto ? "selected" : ""}>
@@ -337,17 +304,16 @@ function renderEdicaoItensPedido(item) {
                     ).join("")}
                 </select>
             </td>
-            <td><input type="number" value="${item.quantidade}" data-f="quantidade"></td>
-            <td><input type="number" step="0.01" value="${item.valor_unitario}" data-f="valor_unitario"></td>
-            <td data-subtotal></td>
-            <td>
+            <td data-label="Quantidade"><input type="number" value="${item.quantidade}" data-f="quantidade"></td>
+            <td data-label="Valor Unit"><input type="number" step="0.01" value="${item.valor_unitario}" data-f="valor_unitario"></td>
+            <td data-label="Valor Total" data-subtotal></td>
+            <td data-label="Ações">
                 <button title="Salvar" data-action="salvar-item" data-item="${item.num}">✅</button>
                 <button title="Cancelar" data-action="cancelar-item">❌</button>
             </td>
         </tr>
     `;
 }
-
 
 function editarItemPedido(pedidoNum, itemNum) {
 
@@ -414,7 +380,6 @@ async function salvarEdicaoItemPedido(pedidoNum, itemNum) {
     }
 }
 
-
 function cancelarEdicaoItemPedido() {
 
     if (!state.pedidos.ui.itemEditando) return;
@@ -467,13 +432,16 @@ function renderItensNovoPedido() {
 
     const tbody = document.getElementById("itens-pedido-tbody");
     if (!tbody) return;
+
     tbody.innerHTML = "";
 
     state.pedidos.itensNovoPedido.forEach((item, index) => {
         const tr = document.createElement("tr");
+        tr.dataset.index = index;
+
         tr.innerHTML = `
-            <td>
-                <select class="select-produto" data-i="${index}" data-f="num_produto">
+            <td data-label="Produto">
+                <select data-f="num_produto" data-i="${index}">
                     <option value="">Selecione</option>
                     ${state.produtos.cache.map(p =>
                         `<option value="${p.num}" ${p.num === item.num_produto ? "selected" : ""}>
@@ -482,66 +450,80 @@ function renderItensNovoPedido() {
                     ).join("")}
                 </select>
             </td>
-            <td>
-                <input
-                    type="number"
-                    value="${item.quantidade}"
-                    data-i="${index}"
-                    data-f="quantidade"
-                >
+
+            <td data-label="Quantidade">
+                <input type="number" data-f="quantidade" data-i="${index}" value="${item.quantidade}">
             </td>
-            <td>
-                <input
-                    type="number"
-                    step="0.01"
-                    value="${item.valor_unitario}"
-                    data-i="${index}"
-                    data-f="valor_unitario"
-                >
+
+            <td data-label="Valor Unit">
+                <input type="number" step="0.01" data-f="valor_unitario" data-i="${index}" value="${item.valor_unitario}">
             </td>
-            <td data-subtotal="${index}">
-                R$ ${(item.quantidade * item.valor_unitario).toFixed(2)}</td>
+
+            <td data-label="Subtotal">
+                R$ ${(item.quantidade * item.valor_unitario).toFixed(2)}
+            </td>
+
             <td>
                 <button data-r="${index}">🗑️</button>
             </td>
         `;
+
         tbody.appendChild(tr);
     });
+    
+    eventosItensPedido();
+    calcularTotalPedido();
+}
 
-    tbody.querySelectorAll("input, select").forEach(el => {
-        el.addEventListener("input", e => {
-            const i = e.target.dataset.i;
-            const f = e.target.dataset.f;
-            state.pedidos.itensNovoPedido[i][f] =
-                f === "num_produto"
-                    ? e.target.value
-                    : Number(e.target.value);
+function eventosItensPedido() {
 
-            atualizarSubtotalItem(i);
-            calcularTotalPedido();
-        });
-    });
+    const tbody = document.getElementById("itens-pedido-tbody");
+    if (!tbody) return;
 
-    tbody.querySelectorAll("button").forEach(btn => {
-        btn.addEventListener("click", () => {
-            state.pedidos.itensNovoPedido.splice(btn.dataset.r, 1);
-            renderItensNovoPedido();
-        });
-    });
+    tbody.addEventListener("input", (e) => {
 
-    tbody.querySelectorAll(".select-produto").forEach(select => {
-        select.addEventListener("change", e => {
-            const index = e.target.dataset.i;
-            const produto = state.produtos.cache.find(p => p.num == e.target.value);
+        const el = e.target;
+        const i = Number(el.dataset.i);
+        const f = el.dataset.f;
+
+        if (i === undefined || !f) return;
+
+        const item = state.pedidos.itensNovoPedido[i];
+
+        if (f === "num_produto") {
+
+            item.num_produto = Number(el.value);
+
+            const produto = state.produtos.cache.find(p => p.num === item.num_produto);
 
             if (produto) {
-            state.pedidos.itensNovoPedido[index].num_produto = produto.num;
-            state.pedidos.itensNovoPedido[index].valor_unitario = Number(produto.valor_venda);
-            renderItensNovoPedido();
+                item.valor_unitario = Number(produto.valor_venda);
+                
+                const inputValor = tbody.querySelector(`input[data-i="${i}"][data-f="valor_unitario"]`);
+                if (inputValor) inputValor.value = produto.valor_venda;
             }
-        });
+
+        } else {
+
+            item[f] = Number(el.value);
+
+        }
+
+        atualizarSubtotalLinha(i);
+        calcularTotalPedido();
     });
-    calcularTotalPedido();
+
+    tbody.addEventListener("click", (e) => {
+
+        const btn = e.target.closest("button[data-r]");
+        if (!btn) return;
+
+        const index = Number(btn.dataset.r);
+
+        state.pedidos.itensNovoPedido.splice(index, 1);
+
+        renderItensNovoPedido();
+    });
 }
 
 async function salvarPedido() {
@@ -612,11 +594,16 @@ function calcularTotalPedido() {
     }
 }
 
-function atualizarSubtotalItem(index) {
+function atualizarSubtotalLinha(index) {
 
     const item = state.pedidos.itensNovoPedido[index];
-    const subtotal = item.quantidade * item.valor_unitario;
-    const cell = document.querySelector(`[data-subtotal="${index}"]`);
+
+    const subtotal = (item.quantidade || 0) * (item.valor_unitario || 0);
+
+    const row = document.querySelector(`tr[data-index="${index}"]`);
+    if (!row) return;
+
+    const cell = row.querySelector('[data-label="Subtotal"]');
 
     if (cell) {
         cell.textContent = `R$ ${subtotal.toFixed(2)}`;
@@ -635,6 +622,8 @@ function atualizarSubtotalEdicao(tr) {
         cell.textContent = `R$ ${subtotal.toFixed(2)}`;
     }
 }
+
+/* ================= INIT EVENTOS ================= */
 
 function initItensPedidoEventos() {
 
@@ -740,6 +729,10 @@ function initPedidosEventos() {
         e.stopPropagation();
 
         switch (action) {
+
+            case "enviar":
+                enviarPedidoFormal(pedidoNum);
+                break;
 
             case "editar":
                 editarPedido(pedidoNum);

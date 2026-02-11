@@ -5,6 +5,11 @@ from src.models.estoque_model import Estoque
 class ProdutoRepository:
 
     def criar_produto(self, db: Session, nome: str, descricao: str, valor_compra: float, valor_venda: float, categoria: str):
+
+        existente = db.query(Produto).filter(Produto.nome == nome).first()
+        if existente:
+            return None
+
         produto = Produto(
             nome = nome,
             descricao = descricao,
@@ -27,16 +32,17 @@ class ProdutoRepository:
         return produto
     
     def atualizar_produto(self, db: Session, num: int, nome: str, descricao: str, valor_compra: float, valor_venda: float, categoria: str):
+
         produto = db.query(Produto).filter(Produto.num == num).first()
         if not produto:
             return None
         
         if nome is not None:
-            nomes_produtos = db.query(Produto).filter(Produto.num != num).all()
-            for n in nomes_produtos:
-                if nome == n.nome:
-                    return False
+            existente = db.query(Produto).filter(Produto.nome == nome, Produto.num != num).all()
+            if existente:
+                return "duplicado"
             produto.nome = nome
+
         if descricao is not None:
             produto.descricao = descricao
         if valor_compra is not None:
@@ -48,15 +54,18 @@ class ProdutoRepository:
 
         db.commit()
         db.refresh(produto)
+
         return produto
 
     def excluir_produto(self, db: Session, num: int):
+
         produto = db.query(Produto).filter(Produto.num == num).first()
         if not produto:
-            return False
+            return None
         
         db.delete(produto)
         db.commit()
+        
         return True
 
     def selecionar_produto(self, db: Session, num: int):

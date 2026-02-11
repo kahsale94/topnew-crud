@@ -5,6 +5,7 @@ from typing import List
 class PedidoRepository:
 
     def criar_pedido(self, db: Session, num_cliente: int, itens: List[ItemPedido], forma_pagamento: str, pago: bool):
+
         valor = 0
         for item in itens:
             valor += item.quantidade * item.valor_unitario
@@ -40,6 +41,7 @@ class PedidoRepository:
             "pago": pedido.pago,
             "data": pedido.data
         }
+
         return pedido_retorno
     
     def atualizar_pedido(self, db: Session, num_pedido: int, num_cliente: int, forma_pagamento: str, pago: bool):
@@ -70,11 +72,14 @@ class PedidoRepository:
             "pago": pedido.pago,
             "data": pedido.data
         }
+        
         return pedido_retorno
 
     def atualizar_item_pedido(self, db: Session, num_pedido: int, num_item: int, num_produto: int, valor_unitario: float, quantidade: int):
 
         item_pedido = db.query(ItemPedido).filter(ItemPedido.num_pedido == num_pedido, ItemPedido.num == num_item).first()
+        if not item_pedido:
+            return None
 
         item_pedido.num_produto = num_produto
         item_pedido.valor_unitario = valor_unitario
@@ -91,6 +96,7 @@ class PedidoRepository:
         pedido = db.query(Pedido).filter(Pedido.num == num_pedido).first()
         if not pedido:
             return None
+        
         pedido.valor = valor
 
         db.commit()
@@ -105,12 +111,15 @@ class PedidoRepository:
             "pago": pedido.pago,
             "data": pedido.data
         }
+
         return pedido_retorno
 
     def excluir_item_pedido(self, db: Session, num_pedido: int, num_item: int):
+
         item_pedido = db.query(ItemPedido).filter(ItemPedido.num_pedido == num_pedido, ItemPedido.num == num_item).first()
         if not item_pedido:
-            return False
+            return None
+        
         db.delete(item_pedido)
 
         itens = db.query(ItemPedido).filter(ItemPedido.num_pedido == num_pedido).all()
@@ -124,17 +133,22 @@ class PedidoRepository:
 
         db.commit()
         db.refresh(pedido)
+
         return True
     
     def excluir_pedido(self, db: Session, num: int):
+
         pedido = db.query(Pedido).filter(Pedido.num == num).first()
         if not pedido:
-            return False
+            return None
+        
         db.delete(pedido)
         db.commit()
+
         return True
 
     def selecionar_itens_pedido(self, db: Session, num_pedido: int):
+
         itens = db.query(ItemPedido).filter(ItemPedido.num_pedido == num_pedido).all()
         itens_retorno = []
         for item in itens:
@@ -147,9 +161,11 @@ class PedidoRepository:
                 "valor_unitario": item.valor_unitario
             }
             itens_retorno.append(item_retorno)
+
         return itens_retorno
     
     def selecionar_pedidos(self, db: Session):
+
         pedidos = db.query(Pedido).all()
         pedidos_retorno = []
         for pedido in pedidos:
@@ -163,5 +179,6 @@ class PedidoRepository:
                 "data": pedido.data
             }
             pedidos_retorno.append(pedido_retorno)
+
         return pedidos_retorno
     

@@ -35,10 +35,10 @@
     <!-- ================= TABS ================= -->
 
     <nav class="tabs">
-        <button class="tab active" data-tab="pedidos">Pedidos</button>
-        <button class="tab" data-tab="clientes">Clientes</button>
-        <button class="tab" data-tab="produtos">Produtos</button>
-        <button class="tab" data-tab="estoque">Estoque</button>
+        <button class="tab active" data-tab="pedidos">🧾 Pedidos</button>
+        <button class="tab" data-tab="clientes">👤 Clientes</button>
+        <button class="tab" data-tab="produtos">📦 Produtos</button>
+        <button class="tab" data-tab="estoque">📊 Estoque</button>
     </nav>
 
     <!-- ================= CONTEÚDO ================= -->
@@ -57,7 +57,7 @@
 
             <!-- ================= NOVO PEDIDO ================= -->
 
-            <div id="form-pedido" class="form-container hidden" style="width: 50%">
+            <div id="form-pedido" class="form-container hidden" style="width: 60%">
                 <h2>Novo Pedido</h2>
 
                 <div class="form-group">
@@ -79,18 +79,20 @@
                     <input type="checkbox" id="pedido-pago">
                 </div>
 
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Quantidade</th>
-                            <th>Valor Unitário</th>
-                            <th>Total</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="itens-pedido-tbody"></tbody>
-                </table>
+                <div class="itens-container">
+                    <table class="data-table itens-form-table">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Valor Unitário</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="itens-pedido-tbody"></tbody>
+                    </table>
+                </div>
 
                 <div class="pedido-total" style="margin: 1%; text-align: right; margin-right: 8%;">
                     Total do pedido:
@@ -118,35 +120,25 @@
                 </button>
             </div>
 
-            <!-- ================= LISTA DESKTOP ================= -->
+            <!-- ================= LISTA PEDIDOS ================= -->
 
-            <div class="table-container desktop-only">
-                <table class="data-table">
+            <div class="table-container">
+                <table class="data-table pedidos-table">
                     <thead>
                         <tr>
                             <th>Nº</th>
                             <th>Cliente</th>
                             <th>Data</th>
                             <th>Valor Total</th>
-                            <th>Forma de Pagamento</th>
-                            <th>Pago</th>
-                            <th>Itens</th>
+                            <th>Forma</th>
+                            <th>Status</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
-
-                    <tbody id="pedidos-tbody">
-                        <!-- GET /pedidos -->
-                    </tbody>
+                    <tbody id="pedidos-tbody"></tbody>
                 </table>
-            </div>
-
-            <!-- ================= LISTA MOBILE ================= -->
-
-            <div class="mobile-only list-pedidos" id="pedidos-mobile">
-                <!-- JS vai preencher -->
-            </div>
-
+            </div> 
+            
         </section>
 
         <!-- ================= CLIENTES ================= -->

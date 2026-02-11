@@ -29,6 +29,10 @@ async function api(url, method = "GET", body = null, retry = true) {
         return api(url, method, body, false);
     }
 
+    if (response.status === 204) {
+        return response;
+    }
+
     if (!response.ok) {
         let message = "Erro inesperado";
 

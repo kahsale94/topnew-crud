@@ -15,21 +15,25 @@ def selecionar_todos(db: db_dependecy):
 def selecionar_produto(num: int, db: db_dependecy):
     return repo.selecionar_produto(db, num)
 
-@router.post("/produtos", response_model=ProdutoResponse)
+@router.post("/produtos", status_code=201, response_model=ProdutoResponse)
 def criar_produto(produto: ProdutoCreate, db: db_dependecy):
-    return repo.criar_produto(db, produto.nome, produto.descricao, produto.valor_compra, produto.valor_venda, produto.categoria)
+    novo_produto =  repo.criar_produto(db, produto.nome, produto.descricao, produto.valor_compra, produto.valor_venda, produto.categoria)
+    if not novo_produto:
+        raise HTTPException(status_code=409, detail="Produto ja cadastrado!")
+    return novo_produto
 
 @router.put("/produtos/{num}", response_model= ProdutoResponse)
 def atualizar_produto(num: int, produto: ProdutoUpdate, db: db_dependecy):
     atualizado = repo.atualizar_produto(db, num, produto.nome, produto.descricao, produto.valor_compra, produto.valor_venda, produto.categoria)
-    if atualizado is False:
-        raise HTTPException(status_code=404, detail="Produto ja cadastrado!")
     if not atualizado:
-        raise HTTPException(status_code=404, detail="Produto não encontrado")
+        raise HTTPException(status_code=404, detail="Produto não encontrado!")
+    if atualizado == "duplicado":
+        raise HTTPException(status_code=409, detail="Produto ja cadastrado!")
     return atualizado
 
-@router.delete("/produtos/{num}")
+@router.delete("/produtos/{num}", status_code=409)
 def excluir_produto(num: int, db: db_dependecy):
-    if not repo.excluir_produto(db, num):
-        raise HTTPException(status_code=404, detail="Produto não encontrado")
-    return {"message": "Produto removido"}
+    deletado = repo.excluir_produto(db, num)
+    if not deletado:
+        raise HTTPException(status_code=404, detail="Produto não encontrado!")
+    return

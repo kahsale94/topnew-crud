@@ -44,13 +44,13 @@ function renderNormalProdutos(p) {
 
     return `
         <tr data-id="${p.num}">
-            <td>${p.num}</td>
-            <td>${p.nome}</td>
-            <td>${p.descricao ?? "-"}</td>
-            <td>R$ ${Number(p.valor_compra).toFixed(2)}</td>
-            <td>R$ ${Number(p.valor_venda).toFixed(2)}</td>
-            <td>${p.categoria ?? "-"}</td>
-            <td>
+            <td data-label="Nº">${p.num}</td>
+            <td data-label="Nome">${p.nome}</td>
+            <td data-label="Descrição">${p.descricao ?? "-"}</td>
+            <td data-label="Valor Compra">R$ ${Number(p.valor_compra).toFixed(2)}</td>
+            <td data-label="Valor Venda">R$ ${Number(p.valor_venda).toFixed(2)}</td>
+            <td data-label="Categoria">${p.categoria ?? "-"}</td>
+            <td data-label="Ações">
                 <button title="Editar" data-action="editar">✏️</button>
                 <button title="Excluir" data-action="excluir">🗑️</button>
             </td>
@@ -62,13 +62,13 @@ function renderEdicaoProdutos(p) {
 
     return `
         <tr data-id="${p.num}" data-editando="true">
-            <td>${p.num}</td>
-            <td><input value="${p.nome}" data-f="nome"></td>
-            <td><input value="${p.descricao ?? ""}" data-f="descricao"></td>
-            <td><input type="number" step="0.01" value="${p.valor_compra}" data-f="valor_compra"></td>
-            <td><input type="number" step="0.01" value="${p.valor_venda}" data-f="valor_venda"></td>
-            <td><input value="${p.categoria ?? ""}" data-f="categoria"></td>
-            <td>
+            <td data-label="Nº">${p.num}</td>
+            <td data-label="Nome"><input value="${p.nome}" data-f="nome"></td>
+            <td data-label="Descrição"><input value="${p.descricao ?? ""}" data-f="descricao"></td>
+            <td data-label="Valor Compra"><input type="number" step="0.01" value="${p.valor_compra}" data-f="valor_compra"></td>
+            <td data-label="Valor Venda"><input type="number" step="0.01" value="${p.valor_venda}" data-f="valor_venda"></td>
+            <td data-label="Categoria"><input value="${p.categoria ?? ""}" data-f="categoria"></td>
+            <td data-label="Ações">
                 <button title="Salvar" data-action="salvar">✅</button>
                 <button title="Cancelar" data-action="cancelar">❌</button>
             </td>

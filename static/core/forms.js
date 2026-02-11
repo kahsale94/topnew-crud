@@ -55,6 +55,10 @@ function limparFormulario(tipo) {
 
 function limparFormularioPedido() {
     document.getElementById("pedido-cliente").value = "";
+    
+    document.getElementById("pedido-forma_pagamento").value = "";
+
+    document.getElementById("pedido-pago").checked = false;
 
     state.pedidos.itensNovoPedido = [];
 

@@ -45,11 +45,11 @@ function renderNormalEstoque(e) {
 
     return `
         <tr data-id="${e.num_produto}">
-            <td>${e.nome_produto}</td>
-            <td>${e.estoque_atual}</td>
-            <td>${e.estoque_minimo}</td>
-            <td>${status}</td>
-            <td>
+            <td data-label="Nome">${e.nome_produto}</td>
+            <td data-label="Estoque Atual">${e.estoque_atual}</td>
+            <td data-label="Estoque Min">${e.estoque_minimo}</td>
+            <td data-label="Status">${status}</td>
+            <td data-label="Ações">
                 <button title="Editar" data-action="editar">✏️</button>
                 <button title="Zerar" data-action="zerar">🧹</button>
             </td>
@@ -61,17 +61,17 @@ function renderEdicaoEstoque(e) {
 
     return `
         <tr data-id="${e.num_produto}" data-editando="true">
-            <td>${e.nome_produto}</td>
-            <td>
+            <td data-label="Nome">${e.nome_produto}</td>
+            <td data-label="Estoque Atual">
                 <input type="number" data-f="estoque_atual"
                     value="${e.estoque_atual}">
             </td>
-            <td>
+            <td data-label="Estoque Min">
                 <input type="number" data-f="estoque_minimo"
                     value="${e.estoque_minimo}">
             </td>
-            <td>—</td>
-            <td>
+            <td data-label="Status">—</td>
+            <td data-label="Ações">
                 <button title="Salvar" data-action="salvar">✅</button>
                 <button title="Cancelar" data-action="cancelar">❌</button>
             </td>

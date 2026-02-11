@@ -46,11 +46,11 @@ function renderNormalClientes(c) {
 
     return `
         <tr data-id="${c.num}">
-            <td>${c.num}</td>
-            <td>${c.nome}</td>
-            <td>${c.telefone}</td>
-            <td>${c.endereco}</td>
-            <td>
+            <td data-label="Nº">${c.num}</td>
+            <td data-label="Nome">${c.nome}</td>
+            <td data-label="Telefone">${c.telefone}</td>
+            <td data-label="Endereço">${c.endereco}</td>
+            <td data-label="Ações">
                 <button title="Editar" data-action="editar">✏️</button>
                 <button title="Excluir" data-action="excluir">🗑️</button>
             </td>
@@ -62,11 +62,11 @@ function renderEdicaoClientes(c) {
 
     return `
         <tr data-id="${c.num}" data-editando="true">
-            <td>${c.num}</td>
-            <td><input value="${c.nome}" data-f="nome"></td>
-            <td><input value="${c.telefone}" data-f="telefone"></td>
-            <td><input value="${c.endereco}" data-f="endereco"></td>
-            <td>
+            <td data-label="Nº">${c.num}</td>
+            <td data-label="Nome"><input value="${c.nome}" data-f="nome"></td>
+            <td data-label="Telefone"><input value="${c.telefone}" data-f="telefone"></td>
+            <td data-label="Endereço"><input value="${c.endereco}" data-f="endereco"></td>
+            <td data-label="Ações">
                 <button title="Salvar" data-action="salvar">✅</button>
                 <button title="Cancelar" data-action="cancelar">❌</button>
             </td>
