@@ -33,6 +33,8 @@ function renderProdutos(produtos) {
     if (!tbody) return;
     tbody.innerHTML = "";
 
+    produtos.sort((a, b) => a.nome.localeCompare(b.nome));
+
     produtos.forEach(produto => {
         tbody.innerHTML += state.produtos.ui.editando === produto.num
             ? renderEdicaoProdutos(produto)

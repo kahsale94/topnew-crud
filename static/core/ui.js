@@ -1,29 +1,19 @@
 import { api } from "./api.js";
+import { logout } from "./auth.js";
 import { API_BASE } from "./config.js";
-import { handleApiError } from "./feedback.js";
+import { mostrarErro } from "./feedback.js";
 import { state } from "./state.js";
 
 async function carregarUsuarioLogado() {
+
     try {
         const usuario = await api(`${API_BASE}/usuarios/me`);
-
         document.getElementById("user-email").textContent = usuario.email;
-        document.getElementById("user-btn").textContent =
-            `${usuario.email} ▾`;
-
+        document.getElementById("user-btn").textContent = `${usuario.email} ▾`;
     } catch (error) {
         console.error("Erro ao carregar usuário", error);
-        handleApiError(error);
+        mostrarErro("Erro ao carregar usuário");
     }
-}
-
-function atualizarIcone(tr, aberto) {
-    if (!tr) return;
-
-    const icone = tr.querySelector(".icone-toggle");
-    if (!icone) return;
-
-    icone.textContent = aberto ? "🔼" : "🔽";
 }
 
 function atualizarFormaPagamentoAutocomplete() {
@@ -40,8 +30,31 @@ function atualizarFormaPagamentoAutocomplete() {
     });
 }
 
+async function initUserMenu() {
+
+    await carregarUsuarioLogado();
+
+    const btn = document.getElementById("user-btn");
+    const dropdown = document.getElementById("user-dropdown");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    btn.addEventListener("click", () => {
+        dropdown.classList.toggle("hidden");
+    });
+
+    logoutBtn.addEventListener("click", () => {
+        localStorage.clear();
+        logout();
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest(".user-menu")) {
+            dropdown.classList.add("hidden");
+        }
+    });
+}
+
 export {
-    atualizarIcone,
-    carregarUsuarioLogado,
-    atualizarFormaPagamentoAutocomplete
+    atualizarFormaPagamentoAutocomplete,
+    initUserMenu
 };

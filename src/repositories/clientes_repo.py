@@ -30,11 +30,15 @@ class ClienteRepository:
         if nome is not None:
             existente = db.query(Cliente).filter(Cliente.nome == nome, Cliente.num != num).first()
             if existente:
-                return "duplicado"
+                return "nome_duplicado"
             cliente.nome = nome
 
         if telefone is not None:
+            existente = db.query(Cliente).filter(Cliente.telefone == telefone, Cliente.num != num).first()
+            if existente:
+                return "telefone_duplicado"
             cliente.telefone = telefone
+            
         if endereco is not None:
             cliente.endereco = endereco
 

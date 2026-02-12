@@ -29,6 +29,8 @@ function renderEstoque(lista) {
 
     tbody.innerHTML = "";
 
+    lista.sort((a, b) => a.nome_produto.localeCompare(b.nome_produto));
+
     lista.forEach(item => {
         tbody.innerHTML += state.estoque.ui.editando === item.num_produto
             ? renderEdicaoEstoque(item)

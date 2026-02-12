@@ -57,18 +57,18 @@
 
             <!-- ================= NOVO PEDIDO ================= -->
 
-            <div id="form-pedido" class="form-container hidden" style="width: 60%">
+            <div id="form-pedido" class="form-container hidden">
                 <h2>Novo Pedido</h2>
 
                 <div class="form-group">
-                    <label>Cliente (nome)</label>
+                    <label>Cliente (nome) <span class="campos-obrigatorios">*</span></label>
                     <select id="pedido-cliente" class="form-control select">
                         <option value="">Selecione</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Forma de Pagamento</label>
+                    <label>Forma de Pagamento <span class="campos-obrigatorios">*</span></label>
                     <select id="pedido-forma_pagamento" class="form-control select">
                         <option value="">Selecione</option>
                     </select>
@@ -83,10 +83,10 @@
                     <table class="data-table itens-form-table">
                         <thead>
                             <tr>
-                                <th>Produto</th>
-                                <th>Quantidade</th>
-                                <th>Valor Unitário</th>
-                                <th>Subtotal</th>
+                                <th>Produto <span class="campos-obrigatorios">*</span></th>
+                                <th>Quantidade <span class="campos-obrigatorios">*</span></th>
+                                <th>Valor Unitário <span class="campos-obrigatorios">*</span></th>
+                                <th>Subtotal <span class="campos-obrigatorios">*</span></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -115,9 +115,7 @@
             <div class="page-header">
                 <H1>Pedidos</H1>
 
-                <button title="Recarregar Pedidos" id="btn-recarregar-pedidos" data-action="recarregar-pedidos" class="btn secondary icon-btn">
-                    <img src="../static/icons/recarregar.png" alt="Recarregar">
-                </button>
+                <button title="Recarregar Pedidos" id="btn-recarregar-pedidos" data-action="recarregar-pedidos" class="icon-btn">⟳</button>
             </div>
 
             <!-- ================= LISTA PEDIDOS ================= -->
@@ -157,12 +155,12 @@
                 <h2>Novo Cliente</h2>
 
                 <div class="form-group">
-                    <label>Nome</label>
+                    <label>Nome <span class="campos-obrigatorios">*</span></label>
                     <input id="cliente-nome" type="text">
                 </div>
 
                 <div class="form-group">
-                    <label>Telefone</label>
+                    <label>Telefone <span class="campos-obrigatorios">*</span></label>
                     <input id="cliente-telefone" type="text">
                 </div>
 
@@ -183,9 +181,7 @@
             <div class="page-header">
                 <H1>Clientes</H1>
 
-                <button title="Recarregar Clientes" id="btn-recarregar-clientes" data-action="recarregar-clientes" class="btn secondary icon-btn">
-                    <img src="../static/icons/recarregar.png" alt="Recarregar">
-                </button>
+                <button title="Recarregar Clientes" id="btn-recarregar-clientes" data-action="recarregar-clientes" class="icon-btn">⟳</button>
             </div>
 
             <div class="table-container">
@@ -196,7 +192,7 @@
                             <th>Nome</th>
                             <th>Telefone</th>
                             <th>Endereço</th>
-                            <th>Ações</th>
+                            <th id="Ações">Ações</th>
                         </tr>
                     </thead>
 
@@ -223,7 +219,7 @@
                 <h2>Novo Produto</h2>
 
                 <div class="form-group">
-                    <label>Nome</label>
+                    <label>Nome <span class="campos-obrigatorios">*</span></label>
                     <input id="produto-nome" type="text">
                 </div>
 
@@ -233,12 +229,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Valor de Compra</label>
+                    <label>Valor de Compra <span class="campos-obrigatorios">*</span></label>
                     <input id="produto-valor_compra" type="number" step="0.01">
                 </div>
 
                 <div class="form-group">
-                    <label>Valor de Venda</label>
+                    <label>Valor de Venda <span class="campos-obrigatorios">*</span></label>
                     <input id="produto-valor_venda" type="number" step="0.01">
                 </div>
 
@@ -259,9 +255,7 @@
             <div class="page-header">
                 <H1>Produtos</H1>
 
-                <button title="Recarregar Produtos" id="btn-recarregar-produtos" data-action="recarregar-produtos" class="btn secondary icon-btn">
-                    <img src="../static/icons/recarregar.png" alt="Recarregar">
-                </button>
+                <button title="Recarregar Produtos" id="btn-recarregar-produtos" data-action="recarregar-produtos" class="icon-btn">⟳</button>
             </div>
 
             <div class="table-container">
@@ -293,9 +287,7 @@
             <div class="page-header">
                 <h1>Estoque</h1>
 
-                <button title="Recarregar Estoque" id="btn-recarregar-estoque" data-action="recarregar-estoque" class="btn secondary icon-btn">
-                    <img src="../static/icons/recarregar.png" alt="Recarregar">
-                </button>
+                <button title="Recarregar Estoque" id="btn-recarregar-estoque" data-action="recarregar-estoque" class="icon-btn">⟳</button>
             </div>
 
             <div class="table-container">

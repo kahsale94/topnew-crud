@@ -35,6 +35,8 @@ function renderClientes(clientes) {
     if (!tbody) return;
     tbody.innerHTML = "";
 
+    clientes.sort((a, b) => a.nome.localeCompare(b.nome));
+
     clientes.forEach(cliente => {
         tbody.innerHTML += state.clientes.ui.editando === cliente.num
             ? renderEdicaoClientes(cliente)

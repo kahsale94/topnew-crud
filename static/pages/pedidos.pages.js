@@ -1,7 +1,6 @@
 import { api } from "../core/api.js";
 import { API_BASE, API_N8N } from "../core/config.js";
 import { state } from "../core/state.js";
-import { atualizarIcone } from "../core/ui.js";
 import { carregarClientes } from "./clientes.pages.js";
 import { abrirFormulario, fecharFormulario, limparFormulario} from "../core/forms.js";
 import { handleApiError, mostrarErro, mostrarSucesso } from "../core/feedback.js";
@@ -38,6 +37,8 @@ function renderPedidos(pedidos) {
             state.pedidos.ui.pedidoAberto = null;
             state.pedidos.ui.detalhesAbertos = null;
         }
+
+        pedidos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
         pedidos.forEach(pedido => {
             const trPedido = document.createElement("tr");
@@ -76,7 +77,6 @@ async function toggleDetalhesPedido(trPedido, pedidoNum) {
     if (state.pedidos.ui.pedidoAberto === trPedido) {
 
         trDetalhes.style.display = "none";
-        atualizarIcone(trPedido, false);
 
         state.pedidos.ui.pedidoAberto = null;
         state.pedidos.ui.detalhesAbertos = null;
@@ -85,11 +85,9 @@ async function toggleDetalhesPedido(trPedido, pedidoNum) {
 
     if (state.pedidos.ui.detalhesAbertos) {
         state.pedidos.ui.detalhesAbertos.style.display = "none";
-        atualizarIcone(state.pedidos.ui.pedidoAberto, false);
     }
 
     trDetalhes.style.display = "table-row";
-    atualizarIcone(trPedido, true);
 
     state.pedidos.ui.pedidoAberto = trPedido;
     state.pedidos.ui.detalhesAbertos = trDetalhes;
@@ -114,7 +112,7 @@ function renderNormalPedidos(pedido) {
     return `
         <td data-label="Nº">${pedido.num}</td>
         <td data-label="Cliente">${pedido.nome_cliente}</td>
-        <td data-label="Data">${new Date(pedido.data).toLocaleDateString("pt-BR")}</td>
+        <td data-label="Data">${new Date(pedido.created_at).toLocaleDateString("pt-BR")}</td>
         <td data-label="Valor">R$ ${Number(pedido.valor).toFixed(2)}</td>
         <td data-label="Forma">${pedido.forma_pagamento}</td>
         <td data-label="Status">
@@ -145,7 +143,7 @@ function renderEdicaoPedidos(pedido) {
             </select>
         </td>
 
-        <td data-label="Data">${new Date(pedido.data).toLocaleDateString("pt-BR")}</td>
+        <td data-label="Data">${new Date(pedido.created_at).toLocaleDateString("pt-BR")}</td>
 
         <td data-label="Valor">R$ ${Number(pedido.valor).toFixed(2)}</td>
 
@@ -241,6 +239,59 @@ async function excluirPedido(pedidoNum) {
     }
 }
 
+async function enviarPedidoFormal(pedidoNum) {
+
+    const pedido = state.pedidos.cache.find(pedido => pedido.num === pedidoNum);
+
+    if (!pedido) {
+        mostrarErro("Pedido não encontrado!");
+        return;
+    }
+
+    if (!state.pedidos.itensPorPedido[pedidoNum]) {
+        try {
+            const itens = await api(`${API_BASE}/pedidos/${pedidoNum}`);
+            state.pedidos.itensPorPedido[pedidoNum] = itens;
+        } catch (error) {
+            console.error(error);
+            handleApiError(error);
+        }
+    }
+
+    const itens = state.pedidos.itensPorPedido[pedidoNum];
+    const cliente = state.clientes.cache.find(cliente => cliente.num === pedido.num_cliente);
+
+    const data = {
+        num_pedido: pedidoNum,
+        num_cliente: cliente.num,
+        nome_cliente: cliente.nome,
+        telefone_cliente: cliente.telefone,
+        itens: itens.map(i => ({
+            num_produto: i.num_produto,
+            nome_produto: state.produtos.cache.find(p => p.num === i.num_produto).nome,
+            quantidade: i.quantidade,
+            valor_unitario: i.valor_unitario.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }),
+        })),
+        data: new Date(pedido.created_at).toLocaleDateString("pt-BR"),
+        forma_pagamento: pedido.forma_pagamento,
+        valor: pedido.valor.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        })
+    }
+
+    try {
+        await api(API_N8N, "POST", data);
+        mostrarSucesso("Pedido enviado com sucesso!")
+    } catch (error) {
+        console.error(error);
+        mostrarErro("Houve algum erro no envio do pedido!");
+    }
+}
+
 /* ================= ITENS PEDIDOS ================= */
 
 function renderItensPedido(trDetalhes, itens, pedidoNum) {
@@ -279,9 +330,9 @@ function renderNormalItensPedido(item) {
 
     return `
         <tr>
-            <td data-label="Nome">${state.produtos.cache.find(p => p.num === item.num_produto)?.nome ?? "Produto removido"}</td>
-            <td data-label="Quantidade">${item.quantidade}</td>
-            <td data-label="Valor Unit">R$ ${Number(item.valor_unitario).toFixed(2)}</td>
+            <td data-label="Produto"><p>Produto</p>${state.produtos.cache.find(p => p.num === item.num_produto)?.nome ?? "Produto removido"}</td>
+            <td data-label="Quantidade"><p>Quantidade</p>${item.quantidade}</td>
+            <td data-label="Valor Unit"><p>Valor Unit</p>R$ ${Number(item.valor_unitario).toFixed(2)}</td>
             <td data-label="Valor Total">R$ ${(item.quantidade * item.valor_unitario).toFixed(2)}</td>
             <td data-label="Ações">
                 <button title="Editar" data-action="editar-item" data-item="${item.num}">✏️</button>
@@ -295,7 +346,8 @@ function renderEdicaoItensPedido(item) {
 
     return `
         <tr data-editando="true">
-            <td data-label="Nome">
+            <td data-label="Produto">
+                <p>Produto</p>
                 <select data-f="num_produto">
                     ${state.produtos.cache.map(p =>
                         `<option value="${p.num}" ${p.num === item.num_produto ? "selected" : ""}>
@@ -304,8 +356,8 @@ function renderEdicaoItensPedido(item) {
                     ).join("")}
                 </select>
             </td>
-            <td data-label="Quantidade"><input type="number" value="${item.quantidade}" data-f="quantidade"></td>
-            <td data-label="Valor Unit"><input type="number" step="0.01" value="${item.valor_unitario}" data-f="valor_unitario"></td>
+            <td data-label="Quantidade"><p>Quantidade <span class="campos-obrigatorios">*</span></p><input type="number" value="${item.quantidade}" data-f="quantidade"></td>
+            <td data-label="Valor Unit"><p>Valor Unit <span class="campos-obrigatorios">*</span></p><input type="number" step="0.01" value="${item.valor_unitario}" data-f="valor_unitario"></td>
             <td data-label="Valor Total" data-subtotal></td>
             <td data-label="Ações">
                 <button title="Salvar" data-action="salvar-item" data-item="${item.num}">✅</button>
@@ -441,6 +493,7 @@ function renderItensNovoPedido() {
 
         tr.innerHTML = `
             <td data-label="Produto">
+                <p>Produto <span class="campos-obrigatorios">*</span></p>
                 <select data-f="num_produto" data-i="${index}">
                     <option value="">Selecione</option>
                     ${state.produtos.cache.map(p =>
@@ -452,10 +505,12 @@ function renderItensNovoPedido() {
             </td>
 
             <td data-label="Quantidade">
+                <p>Quantidade <span class="campos-obrigatorios">*</span></p>
                 <input type="number" data-f="quantidade" data-i="${index}" value="${item.quantidade}">
             </td>
 
             <td data-label="Valor Unit">
+                <p>Valor Unit <span class="campos-obrigatorios">*</span></p>
                 <input type="number" step="0.01" data-f="valor_unitario" data-i="${index}" value="${item.valor_unitario}">
             </td>
 

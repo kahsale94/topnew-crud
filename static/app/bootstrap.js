@@ -1,5 +1,5 @@
 import { verificarAuth } from "../core/guard.js";
-import { carregarUsuarioLogado } from "../core/ui.js";
+import { initUserMenu } from "../core/ui.js";
 import { initTabs, ativarAbaInicial } from "./tabs.js";
 
 import { initPedidos } from "../pages/pedidos.pages.js";
@@ -11,7 +11,7 @@ async function bootstrap() {
     if (!verificarAuth()) return;
 
     // UI global
-    // initUserMenu();
+    initUserMenu();
 
     // páginas
     initPedidos?.();
@@ -23,8 +23,6 @@ async function bootstrap() {
     initTabs();
     ativarAbaInicial();
 
-    // usuário
-    await carregarUsuarioLogado();
 }
 
 export { bootstrap };

@@ -42,7 +42,8 @@ class PedidoResponse(BaseModel):
     valor: float
     forma_pagamento: str
     pago: bool
-    data: datetime
+    created_at: datetime
+    updated_at: datetime
 
     class ConfigDict:
         from_attributes = True

@@ -27,7 +27,9 @@ def atualizar_cliente(num: int, cliente: ClienteUpdate, db: db_dependecy):
     atualizado = repo.atualizar_cliente(db, num, cliente.nome, cliente.telefone, cliente.endereco)
     if not atualizado:
         raise HTTPException(status_code=404, detail="Cliente não encontrado!")
-    if atualizado == "duplicado":
+    if atualizado == "telefone_duplicado":
+        raise HTTPException(status_code=409, detail="Telefone já cadastrado!")
+    if atualizado == "nome_duplicado":
         raise HTTPException(status_code=409, detail="Cliente já cadastrado!")
     return atualizado
 

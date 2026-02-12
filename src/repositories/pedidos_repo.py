@@ -39,7 +39,8 @@ class PedidoRepository:
             "valor": pedido.valor,
             "forma_pagamento": pedido.forma_pagamento,
             "pago": pedido.pago,
-            "data": pedido.data
+            "created_at": pedido.created_at,
+            "updated_at": pedido.updated_at,
         }
 
         return pedido_retorno
@@ -70,7 +71,8 @@ class PedidoRepository:
             "valor": pedido.valor,
             "forma_pagamento": pedido.forma_pagamento,
             "pago": pedido.pago,
-            "data": pedido.data
+            "created_at": pedido.created_at,
+            "updated_at": pedido.updated_at,
         }
         
         return pedido_retorno
@@ -109,7 +111,8 @@ class PedidoRepository:
             "valor": pedido.valor,
             "forma_pagamento": pedido.forma_pagamento,
             "pago": pedido.pago,
-            "data": pedido.data
+            "created_at": pedido.created_at,
+            "updated_at": pedido.updated_at,
         }
 
         return pedido_retorno
@@ -176,7 +179,8 @@ class PedidoRepository:
                 "valor": pedido.valor,
                 "forma_pagamento": pedido.forma_pagamento,
                 "pago": pedido.pago,
-                "data": pedido.data
+                "created_at": pedido.created_at,
+                "updated_at": pedido.updated_at,
             }
             pedidos_retorno.append(pedido_retorno)
 

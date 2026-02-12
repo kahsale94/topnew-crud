@@ -10,7 +10,8 @@ class Pedido(Base):
     valor = Column(DECIMAL, nullable=False)
     forma_pagamento = Column(Text)
     pago = Column(Boolean, default=False)
-    data = Column(TIMESTAMP, default=func.now())
+    created_at = Column(TIMESTAMP, default=func.now())
+    updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
 
     item_pedido = relationship("ItemPedido", back_populates="pedidos", cascade="all, delete")
     cliente = relationship("Cliente", back_populates="pedidos")
