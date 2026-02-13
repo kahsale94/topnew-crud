@@ -1,0 +1,182 @@
+{
+  "name": "Crud - TopNew",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "topnew-pedidos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        0
+      ],
+      "id": "83ae942e-6832-4be4-98bf-c65466d96967",
+      "name": "Webhook",
+      "webhookId": "ca636f4c-de39-4f49-8451-c908440e377e"
+    },
+    {
+      "parameters": {
+        "jsCode": "const num_pedido = $input.first().json.pedido.num;\nconst nome_cliente = $input.first().json.cliente.nome;\nconst itens = $input.first().json.pedido.itens;\nconst forma_pagamento = $input.first().json.pedido.forma_pagamento;\nconst data = $input.first().json.pedido.data;\nconst total = $input.first().json.pedido.valor;\n\nconst mensagem = `\n✨ Pedido Confirmado com Sucesso! ✨\n\nOlá *${nome_cliente}*, tudo bem?\nSeu pedido foi formalizado. Confira os detalhes abaixo 👇\n\n🧾 Pedido nº: ${num_pedido}\n\n📦 Itens do pedido:\n${itens.map((item, index) => `Item: ${index+1}\n  • Produto: ${item.nome_produto}\n  • Quantidade: ${item.quantidade}\n  • Valor Unitario: R$ ${item.valor_unitario}\n  `\n).join('\\n')}\n💰 Forma de Pagamento: ${forma_pagamento}\n\n📅 Data: ${data}\n\n💵 Total: R$ ${total}\n\n🛍️ Parabéns pela compra! 👏\nQualquer dúvida ou necessidade, é só chamar 📲\n  `.trim();\n\nreturn [\n  {\n    json: {\n      output: mensagem,\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "6fd83893-b65c-453e-ae81-ef936c716bd3",
+      "name": "Montar Mensagem"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "db5b8348-3638-4107-a7b0-149123c4dcee",
+              "name": "pedido.num",
+              "value": "={{ $json.body.num_pedido }}",
+              "type": "number"
+            },
+            {
+              "id": "b32f1e0a-f87e-4d85-9177-02bd21cc21c4",
+              "name": "pedido.itens",
+              "value": "={{ $json.body.itens }}",
+              "type": "array"
+            },
+            {
+              "id": "719b399f-6805-4f83-931a-7b835b6a8cc5",
+              "name": "pedido.forma_pagamento",
+              "value": "={{ $json.body.forma_pagamento }}",
+              "type": "string"
+            },
+            {
+              "id": "d5eb5e72-e71e-4f9d-82f3-dc1a2cf7e722",
+              "name": "pedido.data",
+              "value": "={{ $json.body.data }}",
+              "type": "string"
+            },
+            {
+              "id": "804c1058-f262-49fc-a3f0-e040c51fd7e8",
+              "name": "pedido.valor",
+              "value": "={{ $json.body.valor }}",
+              "type": "string"
+            },
+            {
+              "id": "47bb94d7-e03c-4917-aa79-d4083113633a",
+              "name": "cliente.nome",
+              "value": "={{ $json.body.nome_cliente }}",
+              "type": "string"
+            },
+            {
+              "id": "f8a10578-5192-4de2-959b-42cd5cfb2902",
+              "name": "cliente.telefone",
+              "value": "=55{{ $json.body.telefone_cliente }}@s.whatsapp.net",
+              "type": "string"
+            },
+            {
+              "id": "a8a29294-7a3f-41fa-8fce-465f9b4bdceb",
+              "name": "evo.instance",
+              "value": "sale_instance",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -272,
+        0
+      ],
+      "id": "0ff8f26f-105e-4872-bdd9-4ef53f33bec3",
+      "name": "Data Handle"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Data Handle').item.json.evo.instance }}",
+        "remoteJid": "={{ $('Data Handle').item.json.cliente.telefone }}",
+        "messageText": "={{ $json.output }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        112,
+        0
+      ],
+      "id": "7e8c7e12-1afd-46a0-8d4e-8f7982e1a688",
+      "name": "Enviar Menssagem",
+      "credentials": {
+        "evolutionApi": {
+          "id": "vlj9dRMZQEffBnHW",
+          "name": "Evolution Credential - Kaiky"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Data Handle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Enviar Menssagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Handle": {
+      "main": [
+        [
+          {
+            "node": "Montar Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Menssagem": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "75e4051b-c867-46f9-b926-9b9847a87c6d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b304e3d5690d6187ef909ae7d9f59e9b1a1652d2a6e2167896375e495fa017bf"
+  },
+  "id": "p2kzVWnvsVMpydTL7IEG4",
+  "tags": [
+    {
+      "updatedAt": "2025-06-26T00:38:55.999Z",
+      "createdAt": "2025-06-26T00:38:55.999Z",
+      "id": "bUwJA43QdWA1hja2",
+      "name": "Kaiky"
+    }
+  ]
+}

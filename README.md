@@ -4,6 +4,10 @@ Sistema web fullstack para gestão de clientes, produtos, estoque e pedidos, des
 
 O sistema conta com autenticação JWT, controle de acesso a rotas, persistência em PostgreSQL e integração com N8N para envio automatizado de pedidos via WhatsApp.
 
+### 🖥️ Tela principal
+
+![Tela principal](media/demo.png)
+
 ## 📈 Funcionalidades
 
 - Criação, edição e envio de pedidos
@@ -35,9 +39,11 @@ O sistema conta com autenticação JWT, controle de acesso a rotas, persistênci
 
 ### 🗃️ Estrutura
 
-topnew-crud/
+```
+📂 topnew-crud/
 │
 ├── src/
+│   ├── middlewares/
 │   ├── models/
 │   ├── repositories/
 │   ├── routes/
@@ -60,14 +66,17 @@ topnew-crud/
 │   └── workflow.json
 ├── README.md
 └── requirements.txt
+```
 
 ### 🏗️ Arquitetura
 
 O backend segue uma arquitetura em camadas:
 
+- Middlewares - Rate Limit e Visualização de logging
+- Models - Modelos de classes para ORM
+- Repositories → Acesso ao banco (SQLAlchemy)
 - Routes → Camada HTTP
 - Schemas → Validação de dados (Pydantic)
-- Repositories → Acesso ao banco (SQLAlchemy)
 - Security → Autenticação e controle de acesso
 
 O frontend utiliza JavaScript modularizado com separação entre:
@@ -89,7 +98,7 @@ Esse fluxo em N8N foi criado para que os pedidos criados no sistema, possam ser 
 
 ### 🖥️ Workflow em execução
 
-![Workflow em execução](workflows/demo.gif)
+![Workflow em execução](media/demo.gif)
 
 ## 🚀 Como rodar projeto
 

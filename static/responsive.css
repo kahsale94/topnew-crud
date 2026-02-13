@@ -7,6 +7,11 @@
         overflow: auto;
     }
 
+    .form-container.login {
+        max-width: 300px;
+        margin: 35px auto;
+    }
+
     .container {
         margin: 0px 8px 8px 8px;
         padding: 12px;

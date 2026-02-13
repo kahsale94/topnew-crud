@@ -1,5 +1,4 @@
 import { API_BASE } from "./config.js";
-import { state } from "./state.js";
 
 async function login(email, senha) {
     const form = new URLSearchParams();

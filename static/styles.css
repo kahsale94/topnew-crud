@@ -395,6 +395,11 @@ body {
     color: red;
 }
 
+.form-container.login {
+    max-width: 400px;
+    margin: 100px auto;
+}
+
 /* ================= AVISOS ================= */
 
 .toast {

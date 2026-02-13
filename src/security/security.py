@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from src.database import db_dependecy
@@ -45,29 +45,17 @@ class Security:
             user_id = payload.get("sub")
             token_type = payload.get("type")
             if token_type != "access":
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Token inválido para acesso",
-                )
+                raise HTTPException(status_code=401, detail="Token inválido para acesso")
 
             if user_id is None:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Token inválido",
-                )
+                raise HTTPException(status_code=401, detail="Token inválido")
 
         except JWTError:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token inválido ou expirado",
-            )
+            raise HTTPException(status_code=401, detail="Token inválido ou expirado")
 
         usuario = db.query(Usuario).filter(Usuario.id == int(user_id)).first()
 
         if not usuario:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Usuário não encontrado",
-            )
+            raise HTTPException(status_code=401, detail="Usuário não encontrado")
 
         return usuario
