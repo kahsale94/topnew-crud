@@ -202,6 +202,7 @@ function initEstoqueEventos() {
 }
 
 function initEstoque() {
+    
     carregarEstoque();
 
     if (!eventosInicializados) {

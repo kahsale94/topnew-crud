@@ -3,6 +3,7 @@ import { carregarClientes, atualizarListaClientesAutocomplete } from "../pages/c
 import { atualizarFormaPagamentoAutocomplete } from "./ui.js";
 
 function abrirFormulario(tipo) {
+
     const form = document.getElementById(`form-${tipo}`);
     if (!form) return;
 
@@ -14,6 +15,7 @@ function abrirFormulario(tipo) {
 }
 
 function fecharFormulario(tipo) {
+
     const form = document.getElementById(`form-${tipo}`);
     if (!form) return;
 
@@ -22,11 +24,8 @@ function fecharFormulario(tipo) {
     limparFormulario(tipo);
 }
 
-/* =======================
-   PREPARAÇÃO
-======================= */
-
 function prepararFormularioPedido() {
+
     if (!state.clientes.cache.length) {
         carregarClientes(true);
     }
@@ -35,11 +34,8 @@ function prepararFormularioPedido() {
     atualizarFormaPagamentoAutocomplete();
 }
 
-/* =======================
-   LIMPEZA
-======================= */
-
 function limparFormulario(tipo) {
+
     switch (tipo) {
         case "pedido":
             limparFormularioPedido();
@@ -54,6 +50,7 @@ function limparFormulario(tipo) {
 }
 
 function limparFormularioPedido() {
+
     document.getElementById("pedido-cliente").value = "";
     
     document.getElementById("pedido-forma_pagamento").value = "";
@@ -70,12 +67,14 @@ function limparFormularioPedido() {
 }
 
 function limparFormularioCliente() {
+
     document.getElementById("cliente-nome").value = "";
     document.getElementById("cliente-telefone").value = "";
     document.getElementById("cliente-endereco").value = "";
 }
 
 function limparFormularioProduto() {
+    
     document.getElementById("produto-nome").value = "";
     document.getElementById("produto-descricao").value = "";
     document.getElementById("produto-valor_compra").value = "";

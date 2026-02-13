@@ -43,7 +43,9 @@ class EstoqueRepository:
         return True
     
     def selecionar_estoque(self, db: Session):
+
         itens_estoque = db.query(Estoque).all()
+
         estoque_retorno = []
         for item in itens_estoque:
             nome_produto = db.query(Produto).filter(Produto.num == item.num_produto).first()
@@ -55,4 +57,5 @@ class EstoqueRepository:
                 "estoque_minimo": item.estoque_minimo
             }
             estoque_retorno.append(item_retorno)
+            
         return estoque_retorno

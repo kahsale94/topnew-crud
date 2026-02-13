@@ -1,7 +1,7 @@
 import { api } from "../core/api.js";
+import { state } from "../core/state.js";
 import { API_BASE } from "../core/config.js";
 import { mostrarErro, mostrarSucesso, handleApiError } from "../core/feedback.js";
-import { state } from "../core/state.js";
 import { abrirFormulario, fecharFormulario, limparFormulario} from "../core/forms.js";
 
 let eventosInicializados = false;
@@ -265,6 +265,7 @@ function initClientesEventos() {
 
 
 function initClientes() {
+    
     carregarClientes();
 
     if (!eventosInicializados) {

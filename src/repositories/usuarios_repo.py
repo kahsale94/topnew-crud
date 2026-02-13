@@ -5,6 +5,7 @@ from src.models.usuario_model import Usuario
 class UsuarioRepository:
 
     def signup(self, db: Session, email: str, senha: str):
+
         senha_hash = Security.gerar_hash(senha)
 
         usuario = Usuario(
@@ -15,6 +16,7 @@ class UsuarioRepository:
         db.add(usuario)
         db.commit()
         db.refresh(usuario)
+        
         return usuario
     
     def selecionar_usuarios(self, db: Session):

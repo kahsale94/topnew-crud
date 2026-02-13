@@ -285,6 +285,7 @@ function initProdutosEventos() {
 }
 
 function initProdutos() {
+    
     carregarProdutos();
 
     if (!eventosInicializados) {

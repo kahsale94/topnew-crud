@@ -1,9 +1,7 @@
 import { logout } from "./auth.js";
 
-/**
- * Configuração central de feedback
- */
 const FEEDBACK_CONFIG = {
+
     timeout: 3500,
     types: {
         INFO: "info",
@@ -12,10 +10,8 @@ const FEEDBACK_CONFIG = {
     }
 };
 
-/**
- * Renderiza um toast na tela
- */
 function mostrarToast(mensagem, tipo = FEEDBACK_CONFIG.types.INFO) {
+    
     const toast = document.getElementById("toast");
 
     if (!toast) {
@@ -35,9 +31,6 @@ function mostrarToast(mensagem, tipo = FEEDBACK_CONFIG.types.INFO) {
     }, FEEDBACK_CONFIG.timeout);
 }
 
-/**
- * Feedback semântico
- */
 function mostrarErro(mensagem) {
     mostrarToast(mensagem, FEEDBACK_CONFIG.types.ERROR);
 }
@@ -46,10 +39,8 @@ function mostrarSucesso(mensagem) {
     mostrarToast(mensagem, FEEDBACK_CONFIG.types.SUCCESS);
 }
 
-/**
- * Tratamento padronizado de erro de API
- */
 function handleApiError(error) {
+
     if (!error) {
         mostrarErro("Erro inesperado");
         return;

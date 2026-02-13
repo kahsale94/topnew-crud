@@ -6,6 +6,7 @@ if (localStorage.getItem("access_token")) {
 }
 
 async function handleLogin() {
+    
     const email = document.getElementById("email").value;
     const senha = document.getElementById("senha").value;
 

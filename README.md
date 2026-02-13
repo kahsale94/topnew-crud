@@ -72,8 +72,8 @@ O sistema conta com autenticação JWT, controle de acesso a rotas, persistênci
 
 O backend segue uma arquitetura em camadas:
 
-- Middlewares - Rate Limit e Visualização de logging
-- Models - Modelos de classes para ORM
+- Middlewares → Rate Limit e Visualização de logging
+- Models → Modelos de classes para ORM
 - Repositories → Acesso ao banco (SQLAlchemy)
 - Routes → Camada HTTP
 - Schemas → Validação de dados (Pydantic)
@@ -128,8 +128,8 @@ pip install -r requirements.txt
 
 Crie um arquivo `.env`:
 ```
-DATABASE_URL=postgresql://user:senha@localhost/sistema_dev
-SECRET_KEY=sua_chave_secreta
+DATABASE_URL=postgresql://user:senha@localhost/sistema_dev ← "Coloque sua URL!"
+SECRET_KEY=sua_chave_secreta ← "Coloque sua chave secreta!"
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 REFRESH_TOKEN_EXPIRE_DAYS=7
@@ -172,5 +172,5 @@ O sistema foi projetado para uso em pequena escala. Para cenários com alta conc
 - Implementar testes automatizados (pytest)
 - Melhorar estratégia de logging
 - Implementar CI/CD
-- Aprimorar segurança (rate limiting, CORS refinado)
+- Aprimorar segurança (CORS refinado)
 - Criar a parte de pré-atendimento automático (N8N)

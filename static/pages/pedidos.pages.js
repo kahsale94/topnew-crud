@@ -1,9 +1,9 @@
 import { api } from "../core/api.js";
-import { API_BASE, API_N8N } from "../core/config.js";
 import { state } from "../core/state.js";
+import { API_BASE, API_N8N } from "../core/config.js";
 import { carregarClientes } from "./clientes.pages.js";
-import { abrirFormulario, fecharFormulario, limparFormulario} from "../core/forms.js";
 import { handleApiError, mostrarErro, mostrarSucesso } from "../core/feedback.js";
+import { abrirFormulario, fecharFormulario, limparFormulario} from "../core/forms.js";
 
 let eventosInicializados = false;
 
@@ -292,8 +292,6 @@ async function enviarPedidoFormal(pedidoNum) {
     }
 }
 
-/* ================= ITENS PEDIDOS ================= */
-
 function renderItensPedido(trDetalhes, itens, pedidoNum) {
 
     const container = trDetalhes.querySelector(".pedido-detalhes-container");
@@ -478,8 +476,6 @@ function eventosEdicaoItemPedido(tr) {
     atualizarSubtotalEdicao(tr);
 }
 
-/* ================= NOVO PEDIDO FORMULARIO ================= */
-
 function renderItensNovoPedido() {
 
     const tbody = document.getElementById("itens-pedido-tbody");
@@ -634,8 +630,6 @@ async function salvarPedido() {
     }
 };
 
-/* ================= CALCULOS DO PEDIDO FORM ================= */
-
 function calcularTotalPedido() {
 
     const total = state.pedidos.itensNovoPedido.reduce((acc, item) => {
@@ -677,8 +671,6 @@ function atualizarSubtotalEdicao(tr) {
         cell.textContent = `R$ ${subtotal.toFixed(2)}`;
     }
 }
-
-/* ================= INIT EVENTOS ================= */
 
 function initItensPedidoEventos() {
 
@@ -809,6 +801,7 @@ function initPedidosEventos() {
 }
 
 function initPedidos() {
+    
     carregarPedidos();
     
     if (!eventosInicializados) {

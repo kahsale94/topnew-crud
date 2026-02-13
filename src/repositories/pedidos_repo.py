@@ -48,7 +48,6 @@ class PedidoRepository:
     def atualizar_pedido(self, db: Session, num_pedido: int, num_cliente: int, forma_pagamento: str, pago: bool):
 
         pedido = db.query(Pedido).filter(Pedido.num == num_pedido).first()
-
         if not pedido:
             return None
 
@@ -153,6 +152,7 @@ class PedidoRepository:
     def selecionar_itens_pedido(self, db: Session, num_pedido: int):
 
         itens = db.query(ItemPedido).filter(ItemPedido.num_pedido == num_pedido).all()
+
         itens_retorno = []
         for item in itens:
             item_retorno= {
@@ -170,6 +170,7 @@ class PedidoRepository:
     def selecionar_pedidos(self, db: Session):
 
         pedidos = db.query(Pedido).all()
+        
         pedidos_retorno = []
         for pedido in pedidos:
             pedido_retorno= {

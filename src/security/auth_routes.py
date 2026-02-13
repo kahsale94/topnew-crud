@@ -23,7 +23,7 @@ def login(db: db_dependecy, form_data: OAuth2PasswordRequestForm = Depends()):
         }
 
     except ValueError:
-        raise HTTPException(status_code=401, detail="Email ou senha inválidos")
+        raise HTTPException(status_code=401, detail="Email ou senha inválidos!")
 
 @router.post("/refresh")
 def refresh_token(refresh_token: str):
@@ -31,12 +31,12 @@ def refresh_token(refresh_token: str):
         payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
 
         if payload.get("type") != "refresh":
-            raise HTTPException(status_code=401, detail="Token inválido")
+            raise HTTPException(status_code=401, detail="Token inválido!")
 
         user_id = payload.get("sub")
 
     except JWTError:
-        raise HTTPException(status_code=401, detail="Token inválido ou expirado")
+        raise HTTPException(status_code=401, detail="Token inválido ou expirado!")
 
     novo_access_token = Security.criar_access_token(int(user_id))
 

@@ -1,6 +1,7 @@
 import { API_BASE } from "../core/config.js";
 
 async function api(url, method = "GET", body = null, retry = true) {
+    
     const token = localStorage.getItem("access_token");
 
     const headers = {
@@ -48,6 +49,7 @@ async function api(url, method = "GET", body = null, retry = true) {
 }
 
 async function refreshToken() {
+
     const refresh = localStorage.getItem("refresh_token");
     if (!refresh) return false;
 

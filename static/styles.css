@@ -2,7 +2,6 @@ html, body {
     height: 100%;
 }
 
-/* ================= RESET ================= */
 * {
     margin: 0;
     padding: 0;
@@ -18,7 +17,6 @@ body {
     flex-direction: column;
 }
 
-/* ================= HEADER ================= */
 .topbar {
     display: flex;
     justify-content: space-between;
@@ -75,7 +73,6 @@ body {
     cursor: pointer;
 }
 
-/* ================= TABS ================= */
 .tabs {
     display: flex;
     background: #f5f6f8;
@@ -105,7 +102,6 @@ body {
     font-weight: 500;
 }
 
-/* ================= CONTAINER ================= */
 .container {
     background: #ffffff;
     margin: 0 24px 24px 24px;
@@ -117,7 +113,6 @@ body {
     overflow-y: auto;
 }
 
-/* ================= PAGES ================= */
 .page {
     display: none;
     flex-direction: column;
@@ -133,7 +128,6 @@ body {
     justify-content: flex-start;
 }
 
-/* ================= BUTTONS ================= */
 .btn {
     border: none;
     padding: 10px 18px;
@@ -187,7 +181,6 @@ body {
     background-color: #f1f1f1;
 }
 
-/* ================= PAGE HEADER ================= */
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -198,7 +191,6 @@ body {
     flex-shrink: 0;
 }
 
-/* ================= TOOLBAR ================= */
 .toolbar {
     display: flex;
     gap: 12px;
@@ -216,8 +208,6 @@ body {
     background-color: #f5f6f8;
     border: 1px solid #ccc;
 }
-
-/* ================= TABELA ================= */
 
 .data-table {
     width: 100%;
@@ -291,7 +281,6 @@ body {
     border: 1px solid #ccc;
 }
 
-/* ================= STATUS ================= */
 .status {
     padding: 6px 12px;
     border-radius: 4px;
@@ -315,7 +304,6 @@ body {
     color: #ffffff;
 }
 
-/* ================= FORMS ================= */
 .form-group {
     margin-bottom: 16px;
 }
@@ -363,7 +351,6 @@ body {
     border: 1px solid #ccc;
 }
 
-/* ================= FORM ACTIONS ================= */
 .form-actions {
     margin-top: 20px;
     display: flex;
@@ -399,8 +386,6 @@ body {
     max-width: 400px;
     margin: 100px auto;
 }
-
-/* ================= AVISOS ================= */
 
 .toast {
     position: fixed;

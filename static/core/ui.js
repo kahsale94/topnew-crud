@@ -17,6 +17,7 @@ async function carregarUsuarioLogado() {
 }
 
 function atualizarFormaPagamentoAutocomplete() {
+    
     const select = document.getElementById("pedido-forma_pagamento");
     if (!select) return;
 

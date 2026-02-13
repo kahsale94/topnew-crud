@@ -1,6 +1,5 @@
 export const state = {
 
-    // ===== CLIENTES =====
     clientes: {
         cache: [],
         
@@ -9,7 +8,6 @@ export const state = {
         }
     },
 
-    // ===== PRODUTOS =====
     produtos: {
         cache: [],
 
@@ -18,7 +16,6 @@ export const state = {
         }
     },
 
-    // ===== ESTOQUE =====
     estoque: {
         cache: [],
 
@@ -27,7 +24,6 @@ export const state = {
         }
     },
 
-    // ===== PEDIDOS =====
     pedidos: {
         cache: [],
         itensPorPedido: {},
@@ -42,7 +38,6 @@ export const state = {
         }
     },
 
-    // ===== AUXILIARES =====
     auxiliares: {
         formasPagamento: [
             "Cartão de Crédito",

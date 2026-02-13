@@ -14,8 +14,6 @@
 
     <div id="toast" class="toast hidden"></div>
 
-    <!-- ================= HEADER ================= -->
-
     <header class="topbar">
         <h1>Sistema TopNew</h1>
 
@@ -32,8 +30,6 @@
         </div>
     </header>
 
-    <!-- ================= TABS ================= -->
-
     <nav class="tabs">
         <button class="tab active" data-tab="pedidos">🧾 Pedidos</button>
         <button class="tab" data-tab="clientes">👤 Clientes</button>
@@ -41,11 +37,7 @@
         <button class="tab" data-tab="estoque">📊 Estoque</button>
     </nav>
 
-    <!-- ================= CONTEÚDO ================= -->
-
     <main class="container">
-
-        <!-- ================= PEDIDOS ================= -->
 
         <section id="pedidos" class="page active">
 
@@ -54,8 +46,6 @@
                     + Novo Pedido
                 </button>
             </div>
-
-            <!-- ================= NOVO PEDIDO ================= -->
 
             <div id="form-pedido" class="form-container hidden">
                 <h2>Novo Pedido</h2>
@@ -118,8 +108,6 @@
                 <button title="Recarregar Pedidos" id="btn-recarregar-pedidos" data-action="recarregar-pedidos" class="icon-btn">⟳</button>
             </div>
 
-            <!-- ================= LISTA PEDIDOS ================= -->
-
             <div class="table-container">
                 <table class="data-table pedidos-table">
                     <thead>
@@ -139,8 +127,6 @@
             
         </section>
 
-        <!-- ================= CLIENTES ================= -->
-
         <section id="clientes" class="page">
 
             <div class="page-actions">
@@ -148,8 +134,6 @@
                     + Novo Cliente
                 </button>
             </div>
-
-            <!-- ================= NOVO CLIENTE ================= -->
 
             <div id="form-cliente" class="form-container hidden">
                 <h2>Novo Cliente</h2>
@@ -197,13 +181,10 @@
                     </thead>
 
                     <tbody id="clientes-tbody">
-                        <!-- GET /clientes -->
                     </tbody>
                 </table>
             </div>
         </section>
-
-        <!-- ================= PRODUTOS ================= -->
 
         <section id="produtos" class="page">
 
@@ -212,8 +193,6 @@
                     + Novo Produto
                 </button>
             </div>
-
-            <!-- ================= NOVO PRODUTO ================= -->
 
             <div id="form-produto" class="form-container hidden">
                 <h2>Novo Produto</h2>
@@ -273,14 +252,11 @@
                     </thead>
 
                     <tbody id="produtos-tbody">
-                        <!-- GET /produtos -->
                     </tbody>
                 </table>
             </div>
 
         </section>
-
-        <!-- ================= ESTOQUE ================= -->
 
         <section id="estoque" class="page">
 
@@ -303,7 +279,6 @@
                     </thead>
 
                     <tbody id="estoque-tbody">
-                        <!-- GET /estoque -->
                     </tbody>
                 </table>
             </div>

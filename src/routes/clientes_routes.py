@@ -37,5 +37,5 @@ def atualizar_cliente(num: int, cliente: ClienteUpdate, db: db_dependecy):
 def excluir_cliente(num: int, db: db_dependecy):
     deletado = repo.excluir_cliente(db, num)
     if not deletado:
-        raise HTTPException(status_code=404, detail="Cliente não encontrado")
+        raise HTTPException(status_code=404, detail="Cliente não encontrado!")
     return

@@ -5,6 +5,7 @@ function registerTab(tabName, handler) {
 }
 
 function initTabs() {
+
     const tabs = document.querySelectorAll(".tab");
     const pages = document.querySelectorAll(".page");
 
@@ -34,6 +35,7 @@ function initTabs() {
 }
 
 async function ativarAbaInicial() {
+    
     const abaAtiva = document.querySelector(".tab.active");
     if (!abaAtiva) return;
 

@@ -1,7 +1,4 @@
-/* ================= MOBILE ================= */
 @media (max-width: 768px) {
-
-    /* ================= GERAL ================= */
 
     body {
         overflow: auto;
@@ -187,12 +184,5 @@
 
     .itens-form-table tbody tr {
         margin: 12px 0 6px 0;
-    }
-}
-
-/* ================= TABLET ================= */
-@media (max-width: 1115px) {
-    .itens-table {
-        min-width: 700px;
     }
 }

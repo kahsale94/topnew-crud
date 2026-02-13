@@ -1,6 +1,7 @@
 import { API_BASE } from "./config.js";
 
 async function login(email, senha) {
+    
     const form = new URLSearchParams();
     form.append("username", email);
     form.append("password", senha);
@@ -24,6 +25,7 @@ async function login(email, senha) {
 }
 
 function logout() {
+
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     window.location.href = "/login";
