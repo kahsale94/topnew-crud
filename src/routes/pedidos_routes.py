@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from src.database import db_dependecy
-from src.schemas.pedido_schema import PedidoCreate, PedidoResponse, PedidoUpdate, ItemPedidoResponse
-from src.repositories.pedidos_repo import PedidoRepository
 from src.security.security import Security
+from src.repositories.pedidos_repo import PedidoRepository
+from src.schemas.pedido_schema import PedidoCreate, PedidoResponse, PedidoUpdate, ItemPedidoResponse
 
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"], dependencies=[Depends(Security.get_current_user)])
 repo = PedidoRepository()

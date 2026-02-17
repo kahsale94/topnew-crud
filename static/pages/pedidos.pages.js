@@ -1,6 +1,6 @@
 import { api } from "../core/api.js";
 import { state } from "../core/state.js";
-import { API_BASE, API_N8N } from "../core/config.js";
+import { API_BASE } from "../core/config.js";
 import { carregarClientes } from "./clientes.pages.js";
 import { handleApiError, mostrarErro, mostrarSucesso } from "../core/feedback.js";
 import { abrirFormulario, fecharFormulario, limparFormulario} from "../core/forms.js";
@@ -262,29 +262,27 @@ async function enviarPedidoFormal(pedidoNum) {
     const cliente = state.clientes.cache.find(cliente => cliente.num === pedido.num_cliente);
 
     const data = {
-        num_pedido: pedidoNum,
-        num_cliente: cliente.num,
-        nome_cliente: cliente.nome,
-        telefone_cliente: cliente.telefone,
+        num_pedido: String(pedidoNum),
+        nome_cliente: String(cliente.nome),
+        telefone_cliente: String(cliente.telefone),
         itens: itens.map(i => ({
-            num_produto: i.num_produto,
-            nome_produto: state.produtos.cache.find(p => p.num === i.num_produto).nome,
-            quantidade: i.quantidade,
-            valor_unitario: i.valor_unitario.toLocaleString('pt-BR', {
+            nome_produto: String(state.produtos.cache.find(p => p.num === i.num_produto).nome),
+            quantidade: String(i.quantidade),
+            valor_unitario: String(i.valor_unitario.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
-            }),
+            })),
         })),
-        data: new Date(pedido.created_at).toLocaleDateString("pt-BR"),
-        forma_pagamento: pedido.forma_pagamento,
-        valor: pedido.valor.toLocaleString('pt-BR', {
+        data: String(new Date(pedido.created_at).toLocaleDateString("pt-BR")),
+        forma_pagamento: String(pedido.forma_pagamento),
+        valor: String(pedido.valor.toLocaleString('pt-BR', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
-        })
+        }))
     }
 
     try {
-        await api(API_N8N, "POST", data);
+        await api(`${API_BASE}/n8n/enviar`, "POST", data);
         mostrarSucesso("Pedido enviado com sucesso!")
     } catch (error) {
         console.error(error);

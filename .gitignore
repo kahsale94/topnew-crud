@@ -2,3 +2,7 @@
 script.sql
 alembic.ini
 Pendencias Crud TopNew.txt
+venv/
+.venv/
+**/__pycache__/
+*.py[cod]

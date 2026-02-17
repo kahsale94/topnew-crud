@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+N8N_URL = os.getenv("N8N_URL")
+N8N_KEY = os.getenv("N8N_KEY")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
