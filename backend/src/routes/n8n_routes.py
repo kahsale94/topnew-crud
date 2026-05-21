@@ -1,11 +1,17 @@
 import requests
-from fastapi import APIRouter
-from src.schemas.n8n_schema import N8NCreate
+
+from fastapi import APIRouter, Header, HTTPException, Depends
+
 from src.config import N8N_URL, N8N_KEY
+from src.schemas.n8n_schema import N8NCreate
 
 router = APIRouter(prefix="/n8n", tags=["N8N"])
 
-@router.post("/enviar", status_code=201)
+def validar_chave_interna(x_internal_secret: str | None = Header(default=None)):
+    if not x_internal_secret or x_internal_secret != N8N_KEY:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+@router.post("/enviar", status_code=201, dependencies=[Depends(validar_chave_interna)])
 def enviar_pedido(dados: N8NCreate):
 
     itens_retorno = [
@@ -33,7 +39,10 @@ def enviar_pedido(dados: N8NCreate):
         headers={
             "Content-Type": "application/json",
             "x-internal-secret": N8N_KEY
-        }
+        },
+        timeout=15,
     )
+
+    response.raise_for_status()
 
     return response.json()
